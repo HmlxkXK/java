@@ -1,0 +1,148 @@
+2026-10-16 14:37:28  INFO c.fenglin.springboottest.SpringBootTestApplication.logStarting 53:Starting SpringBootTestApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 10584 (C:\Users\Administrator\Desktop\java-main\java-main\springBootTest\target\springBootTest-0.0.1-SNAPSHOT.jar started by Administrator in C:\Users\Administrator\Desktop\java-main\java-main\springBootTest)
+2026-10-16 14:37:28  INFO c.fenglin.springboottest.SpringBootTestApplication.logStartupProfileInfo 658:The following 1 profile is active: "dev"
+2026-10-16 14:37:29  INFO o.s.d.r.config.RepositoryConfigurationDelegate.registerRepositoriesIn 143:Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-16 14:37:29  INFO o.s.d.r.config.RepositoryConfigurationDelegate.registerRepositoriesIn 211:Finished Spring Data repository scanning in 45 ms. Found 1 JPA repository interface.
+2026-10-16 14:37:29  INFO o.s.boot.web.embedded.tomcat.TomcatWebServer.initialize 111:Tomcat initialized with port 57025 (http)
+2026-10-16 14:37:29  INFO org.apache.catalina.core.StandardService.log 168:Starting service [Tomcat]
+2026-10-16 14:37:29  INFO org.apache.catalina.core.StandardEngine.log 168:Starting Servlet engine: [Apache Tomcat/10.1.40]
+2026-10-16 14:37:29  INFO o.a.c.core.ContainerBase.[Tomcat].[localhost].[/].log 168:Initializing Spring embedded WebApplicationContext
+2026-10-16 14:37:29  INFO o.s.b.w.s.c.ServletWebServerApplicationContext.prepareWebApplicationContext 301:Root WebApplicationContext: initialization completed in 1164 ms
+2026-10-16 14:37:30  INFO org.hibernate.jpa.internal.util.LogHelper.logPersistenceUnitInformation 31:HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-10-16 14:37:30  INFO org.hibernate.Version.logVersion 44:HHH000412: Hibernate ORM core version 6.6.13.Final
+2026-10-16 14:37:30  INFO o.hibernate.cache.internal.RegionFactoryInitiator.initiateService 50:HHH000026: Second-level cache disabled
+2026-10-16 14:37:30  INFO o.s.o.j.persistenceunit.SpringPersistenceUnitInfo.addTransformer 87:No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-16 14:37:30  INFO com.zaxxer.hikari.HikariDataSource.getConnection 109:ReigekiHikariPool - Starting...
+2026-10-16 14:37:30  INFO com.zaxxer.hikari.pool.HikariPool.checkFailFast 554:ReigekiHikariPool - Added connection com.mysql.cj.jdbc.ConnectionImpl@7d61468c
+2026-10-16 14:37:30  INFO com.zaxxer.hikari.HikariDataSource.getConnection 122:ReigekiHikariPool - Start completed.
+2026-10-16 14:37:30  INFO org.hibernate.orm.connections.pooling.initiateService 157:HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (ReigekiHikariPool)']
+	Database driver: undefined/unknown
+	Database version: 8.0.39
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-16 14:37:31  INFO o.h.e.t.jta.platform.internal.JtaPlatformInitiator.initiateService 59:HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-16 14:37:31  INFO o.s.orm.jpa.LocalContainerEntityManagerFactoryBean.buildNativeEntityManagerFactory 447:Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-16 14:37:31  INFO o.s.b.a.web.servlet.WelcomePageHandlerMapping.<init> 59:Adding welcome page: class path resource [static/index.html]
+2026-10-16 14:37:32  WARN o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext.refresh 635:Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-10-16 14:37:32  INFO o.s.orm.jpa.LocalContainerEntityManagerFactoryBean.destroy 660:Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-10-16 14:37:32  INFO com.zaxxer.hikari.HikariDataSource.close 349:ReigekiHikariPool - Shutdown initiated...
+2026-10-16 14:37:32  INFO com.zaxxer.hikari.HikariDataSource.close 351:ReigekiHikariPool - Shutdown completed.
+2026-10-16 14:37:32  INFO o.s.b.a.logging.ConditionEvaluationReportLogger.logMessage 82:
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-10-16 14:37:32  ERROR o.s.b.diagnostics.LoggingFailureAnalysisReporter.report 40:
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 57025 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 57025 or configure this application to listen on another port.
+
+2026-10-16 14:37:58  INFO c.fenglin.springboottest.SpringBootTestApplication.logStarting 53:Starting SpringBootTestApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 11176 (C:\Users\Administrator\Desktop\java-main\java-main\springBootTest\target\springBootTest-0.0.1-SNAPSHOT.jar started by Administrator in C:\Users\Administrator\Desktop\java-main\java-main\springBootTest)
+2026-10-16 14:37:58  INFO c.fenglin.springboottest.SpringBootTestApplication.logStartupProfileInfo 658:The following 1 profile is active: "dev"
+2026-10-16 14:37:59  INFO o.s.d.r.config.RepositoryConfigurationDelegate.registerRepositoriesIn 143:Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-10-16 14:37:59  INFO o.s.d.r.config.RepositoryConfigurationDelegate.registerRepositoriesIn 211:Finished Spring Data repository scanning in 41 ms. Found 1 JPA repository interface.
+2026-10-16 14:37:59  INFO o.s.boot.web.embedded.tomcat.TomcatWebServer.initialize 111:Tomcat initialized with port 8081 (http)
+2026-10-16 14:37:59  INFO org.apache.catalina.core.StandardService.log 168:Starting service [Tomcat]
+2026-10-16 14:37:59  INFO org.apache.catalina.core.StandardEngine.log 168:Starting Servlet engine: [Apache Tomcat/10.1.40]
+2026-10-16 14:37:59  INFO o.a.c.core.ContainerBase.[Tomcat].[localhost].[/].log 168:Initializing Spring embedded WebApplicationContext
+2026-10-16 14:37:59  INFO o.s.b.w.s.c.ServletWebServerApplicationContext.prepareWebApplicationContext 301:Root WebApplicationContext: initialization completed in 1164 ms
+2026-10-16 14:37:59  INFO org.hibernate.jpa.internal.util.LogHelper.logPersistenceUnitInformation 31:HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-10-16 14:37:59  INFO org.hibernate.Version.logVersion 44:HHH000412: Hibernate ORM core version 6.6.13.Final
+2026-10-16 14:38:00  INFO o.hibernate.cache.internal.RegionFactoryInitiator.initiateService 50:HHH000026: Second-level cache disabled
+2026-10-16 14:38:00  INFO o.s.o.j.persistenceunit.SpringPersistenceUnitInfo.addTransformer 87:No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-10-16 14:38:00  INFO com.zaxxer.hikari.HikariDataSource.getConnection 109:ReigekiHikariPool - Starting...
+2026-10-16 14:38:00  INFO com.zaxxer.hikari.pool.HikariPool.checkFailFast 554:ReigekiHikariPool - Added connection com.mysql.cj.jdbc.ConnectionImpl@29147c12
+2026-10-16 14:38:00  INFO com.zaxxer.hikari.HikariDataSource.getConnection 122:ReigekiHikariPool - Start completed.
+2026-10-16 14:38:00  INFO org.hibernate.orm.connections.pooling.initiateService 157:HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (ReigekiHikariPool)']
+	Database driver: undefined/unknown
+	Database version: 8.0.39
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-10-16 14:38:01  INFO o.h.e.t.jta.platform.internal.JtaPlatformInitiator.initiateService 59:HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-10-16 14:38:01  INFO o.s.orm.jpa.LocalContainerEntityManagerFactoryBean.buildNativeEntityManagerFactory 447:Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-10-16 14:38:01  INFO o.s.b.a.web.servlet.WelcomePageHandlerMapping.<init> 59:Adding welcome page: class path resource [static/index.html]
+2026-10-16 14:38:01  INFO o.s.boot.web.embedded.tomcat.TomcatWebServer.start 243:Tomcat started on port 8081 (http) with context path '/'
+2026-10-16 14:38:01  INFO c.fenglin.springboottest.SpringBootTestApplication.logStarted 59:Started SpringBootTestApplication in 3.792 seconds (process running for 4.205)
+2026-10-16 14:38:01  INFO c.f.springboottest.config.DataSourceDiagnostics.reportPoolSettings 51:HikariCP 生效参数 -> pool=ReigekiHikariPool, maximumPoolSize=20, minimumIdle=5, connectionTimeout=10000ms, validationTimeout=3000ms, maxLifetime=1800s, idleTimeout=600s, keepaliveTime=300s, leakDetectionThreshold=20000ms
+2026-10-16 14:38:01  INFO c.f.springboottest.config.DataSourceDiagnostics.probe 77:数据库连接正常 -> MySQL 8.0.39（驱动 MySQL Connector/J mysql-connector-j-9.1.0 (Revision: cf2917ea44ae2e43a4514a33771035aa99de73bf)）, 连接耗时 0ms, URL=jdbc:mysql://localhost:3306/reigeki_anime?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL&autoReconnect=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=250&prepStmtCacheSqlLimit=2048&cacheResultSetMetadata=true&cacheServerConfiguration=true&useLocalSessionState=true&elideSetAutoCommits=true&maintainTimeStats=false&rewriteBatchedStatements=true&tcpKeepAlive=true&connectTimeout=10000&socketTimeout=60000
+2026-10-16 14:38:02  INFO com.fenglin.springboottest.config.DataInitializer.seed 49:预置演示账号 -> reigeki@demo.com / reigeki123
+2026-10-16 14:38:02  INFO com.fenglin.springboottest.config.DataInitializer.seed 49:预置演示账号 -> admin@demo.com / admin123456
+2026-10-16 14:38:13  INFO o.a.c.core.ContainerBase.[Tomcat].[localhost].[/].log 168:Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-16 14:38:13  INFO org.springframework.web.servlet.DispatcherServlet.initServletBean 532:Initializing Servlet 'dispatcherServlet'
+2026-10-16 14:38:13  INFO org.springframework.web.servlet.DispatcherServlet.initServletBean 554:Completed initialization in 0 ms
+2026-10-16 14:38:13  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=登录已过期，请重新登录
+2026-10-16 14:38:14  INFO c.f.springboottest.service.impl.AuthServiceImpl.sendCode 66:生成注册验证码 -> email=verify_1792132693@demo.com, code=059910（演示环境明文返回）
+2026-10-16 14:38:14  INFO c.f.springboottest.service.impl.AuthServiceImpl.login 109:社员登录成功 -> id=1, email=reigeki@demo.com, rememberMe=false
+2026-10-16 14:38:14  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:38:29  INFO c.f.springboottest.service.impl.AuthServiceImpl.login 109:社员登录成功 -> id=2, email=admin@demo.com, rememberMe=true
+2026-10-16 14:39:44  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:39:47  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:39:55  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:39:56  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:39:57  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=登录已过期，请重新登录
+2026-10-16 14:40:24  INFO c.f.springboottest.service.impl.AuthServiceImpl.login 109:社员登录成功 -> id=1, email=reigeki@demo.com, rememberMe=false
+2026-10-16 14:40:24  INFO c.f.springboottest.service.impl.AuthServiceImpl.sendCode 66:生成注册验证码 -> email=proxy_1792132824@demo.com, code=722732（演示环境明文返回）
+2026-10-16 14:40:25  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=登录已过期，请重新登录
+2026-10-16 14:40:25  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=登录已过期，请重新登录
+2026-10-16 14:40:25  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=登录已过期，请重新登录
+2026-10-16 14:40:55  INFO c.f.springboottest.service.impl.AuthServiceImpl.login 109:社员登录成功 -> id=2, email=admin@demo.com, rememberMe=true
+2026-10-16 14:40:55  INFO c.f.springboottest.service.impl.AuthServiceImpl.sendCode 66:生成注册验证码 -> email=final_1792132855@demo.com, code=393420（演示环境明文返回）
+2026-10-16 14:40:56  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=登录已过期，请重新登录
+2026-10-16 14:40:56  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=登录已过期，请重新登录
+2026-10-16 14:46:56  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=登录已过期，请重新登录
+2026-10-16 14:47:03  INFO c.f.springboottest.service.impl.AuthServiceImpl.login 109:社员登录成功 -> id=1, email=reigeki@demo.com, rememberMe=true
+2026-10-16 14:47:05  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=登录已过期，请重新登录
+2026-10-16 14:47:05  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:47:12  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=登录已过期，请重新登录
+2026-10-16 14:47:12  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=登录已过期，请重新登录
+2026-10-16 14:49:00  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:49:02  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:49:03  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:49:04  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:49:07  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:49:09  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:49:45  INFO c.f.springboottest.service.impl.AuthServiceImpl.sendCode 66:生成注册验证码 -> email=xiaoran@demo.com, code=445470（演示环境明文返回）
+2026-10-16 14:49:46  INFO c.f.springboottest.service.impl.AuthServiceImpl.register 89:新社员注册成功 -> id=3, email=xiaoran@demo.com
+2026-10-16 14:49:52  INFO c.f.springboottest.service.impl.AuthServiceImpl.login 109:社员登录成功 -> id=3, email=xiaoran@demo.com, rememberMe=true
+2026-10-16 14:49:54  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=400, message=验证码错误或已过期
+2026-10-16 14:49:54  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=400, message=该邮箱已注册，请直接登录
+2026-10-16 14:49:55  WARN c.f.springboottest.common.GlobalExceptionHandler.handleValidationException 31:参数校验失败: 密码长度需在 8-64 位之间
+2026-10-16 14:58:01  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:58:25  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:58:26  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:59:04  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:59:06  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:59:06  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:59:07  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:59:07  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 14:59:19  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 15:02:23  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 15:02:23  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 15:02:24  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 15:02:24  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 15:02:24  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 15:02:24  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 15:02:24  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 15:02:24  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 15:02:25  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 15:02:25  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 15:02:25  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 15:02:25  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 15:06:38  INFO c.f.springboottest.service.impl.AuthServiceImpl.login 109:社员登录成功 -> id=3, email=xiaoran@demo.com, rememberMe=false
+2026-10-16 15:09:03  INFO c.f.springboottest.service.impl.AuthServiceImpl.sendCode 66:生成注册验证码 -> email=e2e_1792134543143@demo.com, code=875098（演示环境明文返回）
+2026-10-16 15:09:05  INFO c.f.springboottest.service.impl.AuthServiceImpl.register 89:新社员注册成功 -> id=4, email=e2e_1792134543143@demo.com
+2026-10-16 15:09:05  INFO c.f.springboottest.service.impl.AuthServiceImpl.login 109:社员登录成功 -> id=4, email=e2e_1792134543143@demo.com, rememberMe=false
+2026-10-16 15:09:10  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-10-16 15:10:24  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=登录已过期，请重新登录
