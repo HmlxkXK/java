@@ -256,14 +256,14 @@ onUnmounted(() => clearInterval(ticker))
   padding: 8px 16px;
   border-radius: 10px;
   border: 1px solid var(--line);
-  background: rgba(255,120,40,.12);
+  background: rgba(30,167,232,.12);
   color: var(--ember);
   font-size: 13px;
   cursor: pointer;
   font-family: inherit;
   transition: background .2s;
 }
-.mini-btn:hover:not(:disabled) { background: rgba(255,120,40,.22); }
+.mini-btn:hover:not(:disabled) { background: rgba(30,167,232,.22); }
 
 /* ----- 修改资料弹层 ----- */
 .modal-mask {
@@ -308,7 +308,7 @@ onUnmounted(() => clearInterval(ticker))
   width: 100%;
   padding: 11px 13px;
   border-radius: 11px;
-  border: 1px solid rgba(255,160,90,.25);
+  border: 1px solid rgba(120,200,255,.25);
   background: rgba(0,0,0,.28);
   color: #fff;
   font-size: 15px;
@@ -316,7 +316,7 @@ onUnmounted(() => clearInterval(ticker))
   transition: border-color .2s, box-shadow .2s;
   font-family: inherit;
 }
-.field input:focus { border-color: var(--fire-1); box-shadow: 0 0 0 3px rgba(255,122,24,.18); }
+.field input:focus { border-color: var(--fire-1); box-shadow: 0 0 0 3px rgba(30,167,232,.18); }
 .field.has-error input { border-color: var(--fire-2); }
 .err { font-size: 12px; color: var(--danger); margin-top: 6px; }
 

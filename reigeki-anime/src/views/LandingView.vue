@@ -31,6 +31,9 @@
         </ul>
       </div>
 
+      <!-- 蔚蓝主题动漫人物立绘（AI 生成，已抠透明底） -->
+      <img class="hero-char" src="/azure-girl.png" alt="蔚蓝色动漫人物立绘" />
+
       <!-- 漂浮的番剧卡，纯装饰 -->
       <div class="float-cards" aria-hidden="true">
         <span
@@ -112,7 +115,7 @@
     </div>
 
     <footer class="landing-footer">
-      <span class="mark">🔥</span>
+      <span class="mark">🌊</span>
       <span>燃尽动漫 · 一个演示用的二次元社区</span>
     </footer>
   </div>
@@ -143,25 +146,25 @@ const stats = [
 ]
 
 const floatCards = [
-  { text: '🔥 进击的巨人', bg: 'linear-gradient(135deg,#ff7a18,#ff3d3d)', left: 6, top: 22, delay: 0 },
-  { text: '🌊 鬼灭之刃', bg: 'linear-gradient(135deg,#36d1dc,#5b86e5)', left: 78, top: 16, delay: 1.2 },
-  { text: '⚡ 咒术回战', bg: 'linear-gradient(135deg,#f7971e,#ffd200)', left: 14, top: 64, delay: 2.1 },
-  { text: '🌸 你的名字', bg: 'linear-gradient(135deg,#ee9ca7,#ffdde1)', left: 84, top: 60, delay: 0.6 }
+  { text: '⚔️ 进击的巨人', bg: 'linear-gradient(135deg,#1ea7e8,#0b6fd0)', left: 6, top: 22, delay: 0 },
+  { text: '🌊 鬼灭之刃', bg: 'linear-gradient(135deg,#43d6f0,#2b86e0)', left: 78, top: 16, delay: 1.2 },
+  { text: '⚡ 咒术回战', bg: 'linear-gradient(135deg,#7fd8ff,#3aa5e8)', left: 14, top: 64, delay: 2.1 },
+  { text: '🌸 你的名字', bg: 'linear-gradient(135deg,#8fd4ff,#b9e8ff)', left: 84, top: 60, delay: 0.6 }
 ]
 
 const animes = ref([
-  { title: '焰之 chapter', desc: '少年与火焰共生，在末世点燃最后的光。', cover: 'linear-gradient(135deg,#ff7a18,#ff3d3d)', rating: '9.2', tag: '热血', episode: 12, followed: false },
+  { title: '碧海之章', desc: '少年与深海共生，在潮汐尽头点亮最后的光。', cover: 'linear-gradient(135deg,#1ea7e8,#0b6fd0)', rating: '9.2', tag: '热血', episode: 12, followed: false },
   { title: '潮汐之歌', desc: '深海少女用歌声唤醒沉睡的古城。', cover: 'linear-gradient(135deg,#36d1dc,#5b86e5)', rating: '8.9', tag: '奇幻', episode: 8, followed: false },
-  { title: '雷鸣剑客', desc: '以雷为刃的浪人，斩尽世间不公。', cover: 'linear-gradient(135deg,#f7971e,#ffd200)', rating: '9.0', tag: '动作', episode: 20, followed: false },
-  { title: '樱落之时', desc: '转学少女与一段被遗忘的约定。', cover: 'linear-gradient(135deg,#ee9ca7,#ffdde1)', rating: '8.7', tag: '治愈', episode: 5, followed: false },
+  { title: '雷鸣剑客', desc: '以雷为刃的浪人，斩尽世间不公。', cover: 'linear-gradient(135deg,#5fd0ff,#2b86e0)', rating: '9.0', tag: '动作', episode: 20, followed: false },
+  { title: '樱落之时', desc: '转学少女与一段被遗忘的约定。', cover: 'linear-gradient(135deg,#9fd8ff,#cfeeff)', rating: '8.7', tag: '治愈', episode: 5, followed: false },
   { title: '星轨彼岸', desc: '跨越光年的通讯，连接两个文明的少年。', cover: 'linear-gradient(135deg,#7f53ff,#647dee)', rating: '9.1', tag: '科幻', episode: 15, followed: false },
   { title: '荒野炊烟', desc: '末日废土里，美食是最温柔的抵抗。', cover: 'linear-gradient(135deg,#11998e,#38ef7d)', rating: '8.8', tag: '日常', episode: 30, followed: false }
 ])
 
 const modules = [
-  { icon: '📺', title: '追番进度', desc: '续看、收藏、更新提醒，多端同步', bg: 'rgba(255,120,40,.16)' },
+  { icon: '📺', title: '追番进度', desc: '续看、收藏、更新提醒，多端同步', bg: 'rgba(30,167,232,.16)' },
   { icon: '💬', title: '社区动态', desc: '发帖、评论、和同好一起讨论', bg: 'rgba(91,134,229,.16)' },
-  { icon: '🛡️', title: '同好公会', desc: '建团、组队、冲排行榜', bg: 'rgba(247,151,30,.16)' }
+  { icon: '🛡️', title: '同好公会', desc: '建团、组队、冲排行榜', bg: 'rgba(90,200,255,.16)' }
 ]
 
 const tags = ['热血', '奇幻', '治愈', '科幻', '日常', '运动', '悬疑', '恋爱', '机战', '搞笑', '美食', '音乐']
@@ -235,10 +238,38 @@ onUnmounted(() => numberObserver?.disconnect())
   max-height: 760px;
   right: -10vw;
   top: -10vw;
-  background: radial-gradient(circle, rgba(255,90,40,.35), transparent 60%);
+  background: radial-gradient(circle, rgba(30,150,240,.38), transparent 60%);
   filter: blur(20px);
   animation: pulseGlow 7s ease-in-out infinite;
   pointer-events: none;
+}
+/* ===== 蔚蓝人物立绘 =====
+   贴在 Hero 右侧、底边对齐（图片下沿正好是裁切边，贴底最自然）；
+   drop-shadow 用蔚蓝光晕代替原来的发光背景，浮动动画复用全局 floaty。 */
+.hero-char {
+  position: absolute;
+  right: 3vw;
+  bottom: 0;
+  height: min(80vh, 660px);
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 0 55px rgba(60, 180, 255, .4));
+  animation: floaty 7s ease-in-out infinite;
+}
+/* 立绘底部的裁切边做一层渐隐，避免生硬的横切线 */
+.hero-char-wrap { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+@media (max-width: 1280px) {
+  .hero-char { height: min(66vh, 520px); opacity: .9; }
+}
+/* 窄屏文字优先：立绘淡出成背景装饰，不与标题/按钮抢空间 */
+@media (max-width: 1024px) {
+  .hero-char {
+    height: min(56vh, 440px);
+    right: -6vw;
+    opacity: .22;
+    filter: blur(1px) drop-shadow(0 0 55px rgba(60, 180, 255, .4));
+  }
 }
 .hero-inner {
   position: relative;
@@ -250,11 +281,11 @@ onUnmounted(() => numberObserver?.disconnect())
   line-height: 1.02;
   font-weight: 900;
   margin: 18px 0 18px;
-  background: linear-gradient(90deg, #fff, #ffd36b 45%, #ff5a3c);
+  background: linear-gradient(90deg, #fff, #a5e6ff 45%, #2b9fe8);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 0 50px rgba(255,90,40,.25);
+  text-shadow: 0 0 50px rgba(30,140,230,.25);
 }
 .hero-title span {
   -webkit-text-fill-color: var(--fire-3);
@@ -296,18 +327,18 @@ onUnmounted(() => numberObserver?.disconnect())
   border: 1px solid transparent;
 }
 .btn-solid {
-  color: #2a0b06;
+  color: #04263f;
   background: linear-gradient(90deg, var(--ember), var(--fire-1) 50%, var(--fire-2));
   background-size: 200% 100%;
-  box-shadow: 0 12px 30px rgba(255,90,40,.45);
+  box-shadow: 0 12px 30px rgba(30,140,230,.45);
 }
-.btn-solid:hover { background-position: 100% 0; transform: translateY(-2px); box-shadow: 0 18px 42px rgba(255,90,40,.6); }
+.btn-solid:hover { background-position: 100% 0; transform: translateY(-2px); box-shadow: 0 18px 42px rgba(30,140,230,.6); }
 .btn-ghost {
   color: var(--ember);
-  background: rgba(255,120,40,.1);
+  background: rgba(30,167,232,.1);
   border-color: var(--line);
 }
-.btn-ghost:hover { background: rgba(255,120,40,.2); transform: translateY(-2px); }
+.btn-ghost:hover { background: rgba(30,167,232,.2); transform: translateY(-2px); }
 
 .hero-stats {
   display: flex;
@@ -383,7 +414,7 @@ onUnmounted(() => numberObserver?.disconnect())
 }
 .anime-rating {
   background: rgba(0,0,0,.45);
-  color: #ffd36b;
+  color: #9fe4ff;
   font-weight: 800;
   font-size: 13px;
   padding: 4px 9px;
@@ -410,7 +441,7 @@ onUnmounted(() => numberObserver?.disconnect())
 }
 .mini-btn {
   border: 1px solid var(--line);
-  background: rgba(255,120,40,.12);
+  background: rgba(30,167,232,.12);
   color: var(--ember);
   border-radius: 9px;
   padding: 6px 12px;
@@ -418,7 +449,7 @@ onUnmounted(() => numberObserver?.disconnect())
   cursor: pointer;
   transition: background .2s, color .2s;
 }
-.mini-btn:hover { background: rgba(255,120,40,.24); }
+.mini-btn:hover { background: rgba(30,167,232,.24); }
 
 /* ===== 模块 ===== */
 .modules {
@@ -457,7 +488,7 @@ onUnmounted(() => numberObserver?.disconnect())
   padding: 0 7vw;
 }
 .cta-inner {
-  background: linear-gradient(120deg, rgba(255,122,24,.22), rgba(255,61,61,.18));
+  background: linear-gradient(120deg, rgba(30,167,232,.2), rgba(11,111,208,.16));
   border: 1px solid var(--line);
   border-radius: 24px;
   padding: 48px;
