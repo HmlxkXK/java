@@ -16,7 +16,9 @@
 
 import {
   readToken,
+  readAdminToken,
   notifyUnauthorized,
+  notifyAdminUnauthorized,
   isTokenExpired
 } from './session.js'
 
@@ -49,7 +51,8 @@ export const NETWORK_ERROR = -1
  * @param {string} [options.method='GET']
  * @param {object} [options.body]    会被 JSON 序列化
  * @param {object} [options.params]  查询参数，值为 undefined/null 的键会被跳过
- * @param {boolean} [options.auth]   是否注入 token，并在 401 时清会话
+ * @param {boolean|'admin'} [options.auth] 注入 token 并在 401 时清会话；
+ *                         true 用社员 token，'admin' 用后台管理员 token
  * @param {number} [options.timeout] 毫秒
  * @returns {Promise<any>} 直接返回响应体的 data 字段
  */
@@ -75,10 +78,12 @@ export async function request(path, options = {}) {
   const headers = {}
   if (body !== undefined) headers['Content-Type'] = 'application/json'
   if (auth) {
-    const token = readToken()
+    // auth 传 'admin' 时走后台管理员会话，401 后清的是管理员会话、回后台登录页
+    const isAdmin = auth === 'admin'
+    const token = isAdmin ? readAdminToken() : readToken()
     // 本地已判定过期就不发这次注定失败的请求，省一次往返也少一条后端 warn 日志
     if (token && isTokenExpired(token)) {
-      notifyUnauthorized()
+      isAdmin ? notifyAdminUnauthorized() : notifyUnauthorized()
       throw new ApiError(401, '登录已过期，请重新登录')
     }
     if (token) headers.Authorization = `Bearer ${token}`
@@ -118,7 +123,9 @@ export async function request(path, options = {}) {
   }
 
   if (json.code !== 200) {
-    if (json.code === 401 && auth) notifyUnauthorized()
+    if (json.code === 401 && auth) {
+      auth === 'admin' ? notifyAdminUnauthorized() : notifyUnauthorized()
+    }
     throw new ApiError(json.code, json.message || '请求失败')
   }
 
@@ -128,5 +135,6 @@ export async function request(path, options = {}) {
 export const http = {
   get: (path, options) => request(path, { ...options, method: 'GET' }),
   post: (path, options) => request(path, { ...options, method: 'POST' }),
-  put: (path, options) => request(path, { ...options, method: 'PUT' })
+  put: (path, options) => request(path, { ...options, method: 'PUT' }),
+  delete: (path, options) => request(path, { ...options, method: 'DELETE' })
 }

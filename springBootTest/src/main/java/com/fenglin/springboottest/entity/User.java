@@ -1,50 +1,45 @@
 package com.fenglin.springboottest.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.time.LocalDateTime;
 
 /**
  * 社员（用户）实体。
  * <p>表名用 {@code t_user}，因为 {@code user} 是 MySQL 的保留字。
+ * <p>数据访问层已从 JPA 迁移到 MyBatis-Plus：
+ * <ul>
+ *   <li>{@code @TableName} 对应原 JPA 的 {@code @Table}；</li>
+ *   <li>{@code @TableId(type = AUTO)} 对应原来的数据库自增主键；</li>
+ *   <li>原 {@code @PrePersist} 的注册时间兜底改由
+ *       {@code MybatisPlusMetaObjectHandler} 在 insert 时统一填充；</li>
+ *   <li>字段名与列名的驼峰/下划线映射由全局 {@code map-underscore-to-camel-case} 完成，
+ *       无需逐列标注。</li>
+ * </ul>
  */
-@Entity
-@Table(name = "t_user")
+@TableName("t_user")
 public class User {
 
-    /** 主键，自增 */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    /** 主键，数据库自增 */
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     /** 昵称 */
-    @Column(name = "nickname", nullable = false, length = 50)
     private String nickname;
 
     /** 登录账号（邮箱），唯一 */
-    @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
     /** BCrypt 加密后的密码，绝不明文存储 */
-    @Column(name = "password", nullable = false, length = 100)
     private String password;
 
-    /** 注册时间 */
-    @Column(name = "create_time", nullable = false, updatable = false)
+    /** 注册时间，插入时由 MetaObjectHandler 自动填充 */
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
-
-    @PrePersist
-    public void prePersist() {
-        if (createTime == null) {
-            createTime = LocalDateTime.now();
-        }
-    }
 
     public Long getId() {
         return id;

@@ -21,6 +21,19 @@ export function formatDateTime(ms) {
 }
 
 /**
+ * 格式化「已是字符串」的时间值（后端 LocalDateTime 序列化产物）。
+ * 兼容 '2026-10-26T08:59:00' 与 '2026-10-26 08:59:00' 两种形态；
+ * 传进来的若是时间戳数字，退回 formatDateTime 处理。
+ * @param {string|number} value
+ */
+export function formatDateTimeText(value) {
+  if (typeof value === 'string' && value.trim()) {
+    return value.replace('T', ' ').slice(0, 16)
+  }
+  return formatDateTime(value)
+}
+
+/**
  * 把「距离某个时间点还有多久」说成人话。
  * 用于展示 token 剩余有效期。
  *

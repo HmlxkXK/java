@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { hasValidToken } from '../api/session.js'
+import { hasValidToken, hasValidAdminToken } from '../api/session.js'
 
 /**
  * 路由表。
@@ -30,6 +30,12 @@ const routes = [
     meta: { requiresAuth: true, title: '社员中心' }
   },
   {
+    path: '/watch/:animeId',
+    name: 'watch',
+    component: () => import('../views/WatchView.vue'),
+    meta: { title: '播放' }
+  },
+  {
     path: '/login',
     name: 'login',
     component: () => import('../views/LoginView.vue'),
@@ -40,6 +46,27 @@ const routes = [
     name: 'register',
     component: () => import('../views/RegisterView.vue'),
     meta: { guestOnly: true, title: '注册' }
+  },
+  /* ---------- 后台管理（与前台社员会话完全隔离） ---------- */
+  {
+    path: '/admin/login',
+    name: 'admin-login',
+    component: () => import('../views/admin/AdminLoginView.vue'),
+    meta: { title: '后台登录' }
+  },
+  {
+    path: '/admin',
+    component: () => import('../views/admin/AdminLayout.vue'),
+    meta: { adminAuth: true, title: '后台管理' },
+    children: [
+      { path: '', redirect: { name: 'admin-animes' } },
+      {
+        path: 'animes',
+        name: 'admin-animes',
+        component: () => import('../views/admin/AdminAnimesView.vue'),
+        meta: { adminAuth: true, title: '番剧管理' }
+      }
+    ]
   },
   {
     path: '/:pathMatch(.*)*',
@@ -67,6 +94,19 @@ const router = createRouter({
  * 401 处理清掉会话并弹回登录页。
  */
 router.beforeEach((to) => {
+  /* ---- 后台管理区：独立于前台社员登录态 ---- */
+  if (to.path.startsWith('/admin')) {
+    // 已登录后台却访问登录页 → 直接进管理页
+    if (to.name === 'admin-login') {
+      return hasValidAdminToken() ? { path: '/admin' } : true
+    }
+    // 未登录后台访问管理页 → 弹回后台登录页并带 redirect
+    if (to.matched.some((r) => r.meta.adminAuth) && !hasValidAdminToken()) {
+      return { name: 'admin-login', query: { redirect: to.fullPath } }
+    }
+    return true
+  }
+
   const authenticated = hasValidToken()
 
   if (to.meta.requiresAuth && !authenticated) {

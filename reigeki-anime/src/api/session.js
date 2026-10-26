@@ -13,6 +13,13 @@
 export const TOKEN_KEY = 'reigeki_token'
 export const USER_KEY = 'reigeki_user'
 
+/**
+ * 后台管理员会话的存储键。
+ * 与社员会话完全隔离：社员登录 / 后台登录互不影响、可同时存在。
+ */
+export const ADMIN_TOKEN_KEY = 'reigeki_admin_token'
+export const ADMIN_USER_KEY = 'reigeki_admin_user'
+
 /** 读取 token；取不到或为空串都返回 null，避免下游到处判空 */
 export function readToken() {
   try {
@@ -95,6 +102,48 @@ export function hasValidToken() {
   return Boolean(token) && !isTokenExpired(token)
 }
 
+/* ---------------- 后台管理员会话（与社员会话同构、键不同） ---------------- */
+
+export function readAdminToken() {
+  try {
+    return localStorage.getItem(ADMIN_TOKEN_KEY) || null
+  } catch {
+    return null
+  }
+}
+
+export function readAdminUser() {
+  try {
+    const raw = localStorage.getItem(ADMIN_USER_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
+export function writeAdminSession(token, user) {
+  try {
+    if (token) localStorage.setItem(ADMIN_TOKEN_KEY, token)
+    if (user) localStorage.setItem(ADMIN_USER_KEY, JSON.stringify(user))
+  } catch {
+    /* 存储不可用时静默忽略 */
+  }
+}
+
+export function clearAdminSession() {
+  try {
+    localStorage.removeItem(ADMIN_TOKEN_KEY)
+    localStorage.removeItem(ADMIN_USER_KEY)
+  } catch {
+    /* 同上 */
+  }
+}
+
+export function hasValidAdminToken() {
+  const token = readAdminToken()
+  return Boolean(token) && !isTokenExpired(token)
+}
+
 /**
  * 401 订阅机制。
  *
@@ -115,6 +164,25 @@ export function notifyUnauthorized() {
       handler()
     } catch {
       /* 单个订阅者出错不应影响其它订阅者 */
+    }
+  })
+}
+
+/** 管理端的 401 订阅：与社员互不相干，失效后回后台登录页 */
+const adminUnauthorizedHandlers = new Set()
+
+export function onAdminUnauthorized(handler) {
+  adminUnauthorizedHandlers.add(handler)
+  return () => adminUnauthorizedHandlers.delete(handler)
+}
+
+export function notifyAdminUnauthorized() {
+  clearAdminSession()
+  adminUnauthorizedHandlers.forEach((handler) => {
+    try {
+      handler()
+    } catch {
+      /* 同上 */
     }
   })
 }

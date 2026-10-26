@@ -43,32 +43,77 @@
           :style="{ background: c.bg, left: c.left + '%', top: c.top + '%', animationDelay: c.delay + 's' }"
         >{{ c.text }}</span>
       </div>
+
+      <!-- Hero 文案与立绘之间空白处的「动漫合集」竖排栏（超宽屏才显示） -->
+      <aside class="side-collections" aria-label="动漫合集">
+        <header class="sc-head">
+          <h3>📚 动漫合集</h3>
+          <span>本周精选</span>
+        </header>
+        <ul class="sc-list">
+          <li v-for="c in collections" :key="c.name" class="sc-item" :style="{ '--c': c.color }">
+            <span class="sc-ic" aria-hidden="true">{{ c.icon }}</span>
+            <div class="sc-txt">
+              <b>{{ c.name }}</b>
+              <span>{{ c.count }} 部 · 持续更新</span>
+            </div>
+          </li>
+        </ul>
+      </aside>
     </section>
 
     <!-- ===== 热门番剧 ===== -->
     <section class="section">
       <header class="section-head" v-reveal>
         <h2>本周热门番剧</h2>
-        <p>数据是演示用的示例内容，等后端接上「番剧接口」即可替换为真实数据。</p>
+        <p>数据来自后端 <code>GET /api/animes</code>，内容可在右上角「后台管理」中维护。</p>
       </header>
 
-      <div class="anime-grid">
+      <!-- 加载中：占位骨架 -->
+      <div v-if="animesLoading" class="anime-grid" aria-hidden="true">
+        <div v-for="i in 6" :key="i" class="anime-card anime-skeleton">
+          <div class="anime-cover"><span class="skeleton-block sk-cover"></span></div>
+          <div class="anime-body">
+            <span class="skeleton-block" style="display:block;height:18px;width:60%;margin-bottom:8px"></span>
+            <span class="skeleton-block" style="display:block;height:13px;width:90%;margin-bottom:6px"></span>
+            <span class="skeleton-block" style="display:block;height:13px;width:40%"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 加载失败 -->
+      <div v-else-if="animesError" class="anime-fallback" role="alert">
+        <p>番剧数据加载失败：{{ animesError }}</p>
+        <button type="button" class="mini-btn" @click="loadAnimes">重试</button>
+      </div>
+
+      <!-- 空状态 -->
+      <div v-else-if="!animes.length" class="anime-fallback">
+        <p>管理员还没有上架任何番剧，去后台添加后这里就会热闹起来。</p>
+        <router-link class="mini-btn" to="/admin/login">进入后台管理 →</router-link>
+      </div>
+
+      <div v-else class="anime-grid">
         <article
           v-for="(a, i) in animes"
-          :key="a.title"
+          :key="a.id"
           class="anime-card"
           v-reveal="{ delay: i * 70 }"
         >
-          <div class="anime-cover" :style="{ background: a.cover }">
-            <span class="anime-rating">★ {{ a.rating }}</span>
-            <span class="anime-tag">{{ a.tag }}</span>
+          <div class="anime-cover" :style="{ background: a.cover || fallbackCover(a) }">
+            <span class="anime-rating">★ {{ a.rating || '—' }}</span>
+            <span class="anime-tag">{{ a.tag || '番剧' }}</span>
           </div>
           <div class="anime-body">
             <h3>{{ a.title }}</h3>
-            <p>{{ a.desc }}</p>
+            <p>{{ a.description }}</p>
             <div class="anime-meta">
-              <span>更新至 {{ a.episode }} 话</span>
-              <button type="button" class="mini-btn" @click="onFollow(a)">{{ a.followed ? '已追' : '+ 追番' }}</button>
+              <span v-if="a.episode != null">更新至 {{ a.episode }} 话</span>
+              <span v-else>连载中</span>
+              <div class="anime-actions">
+                <router-link class="mini-btn play-btn" :to="`/watch/${a.id}`">▶ 播放</router-link>
+                <button type="button" class="mini-btn" @click="onFollow(a)">{{ a.followed ? '已追' : '+ 追番' }}</button>
+              </div>
             </div>
           </div>
         </article>
@@ -136,8 +181,13 @@
 
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useAuth } from '../composables/useAuth.js'
+import { animeCollections } from '../data/collections.js'
+import { fetchPublicAnimes } from '../api/anime.js'
 
 const { isAuthenticated } = useAuth()
+
+// Hero 侧栏只展示前 6 个合集，保持紧凑
+const collections = animeCollections.slice(0, 6)
 
 const stats = [
   { target: 3200, suffix: '+', label: '连载番剧' },
@@ -152,14 +202,36 @@ const floatCards = [
   { text: '🌸 你的名字', bg: 'linear-gradient(135deg,#8fd4ff,#b9e8ff)', left: 84, top: 60, delay: 0.6 }
 ]
 
-const animes = ref([
-  { title: '碧海之章', desc: '少年与深海共生，在潮汐尽头点亮最后的光。', cover: 'linear-gradient(135deg,#1ea7e8,#0b6fd0)', rating: '9.2', tag: '热血', episode: 12, followed: false },
-  { title: '潮汐之歌', desc: '深海少女用歌声唤醒沉睡的古城。', cover: 'linear-gradient(135deg,#36d1dc,#5b86e5)', rating: '8.9', tag: '奇幻', episode: 8, followed: false },
-  { title: '雷鸣剑客', desc: '以雷为刃的浪人，斩尽世间不公。', cover: 'linear-gradient(135deg,#5fd0ff,#2b86e0)', rating: '9.0', tag: '动作', episode: 20, followed: false },
-  { title: '樱落之时', desc: '转学少女与一段被遗忘的约定。', cover: 'linear-gradient(135deg,#9fd8ff,#cfeeff)', rating: '8.7', tag: '治愈', episode: 5, followed: false },
-  { title: '星轨彼岸', desc: '跨越光年的通讯，连接两个文明的少年。', cover: 'linear-gradient(135deg,#7f53ff,#647dee)', rating: '9.1', tag: '科幻', episode: 15, followed: false },
-  { title: '荒野炊烟', desc: '末日废土里，美食是最温柔的抵抗。', cover: 'linear-gradient(135deg,#11998e,#38ef7d)', rating: '8.8', tag: '日常', episode: 30, followed: false }
-])
+/*
+ * 番剧数据改为来自后端 GET /api/animes（后台管理维护），
+ * 这里只保留「追番按钮」这个本地交互态；请求失败时给出重试入口，
+ * 不再用硬编码数据兜底，避免「看似有数据其实后端没通」的错觉。
+ */
+const animes = ref([])
+const animesLoading = ref(false)
+const animesError = ref('')
+
+/* 没配封面渐变时按 id 稳定选一个兜底色 */
+const FALLBACK_COVERS = [
+  'linear-gradient(135deg,#1ea7e8,#0b6fd0)',
+  'linear-gradient(135deg,#36d1dc,#5b86e5)',
+  'linear-gradient(135deg,#7f53ff,#647dee)'
+]
+function fallbackCover(a) {
+  return FALLBACK_COVERS[(a.id || 0) % FALLBACK_COVERS.length]
+}
+
+async function loadAnimes() {
+  animesLoading.value = true
+  animesError.value = ''
+  try {
+    animes.value = (await fetchPublicAnimes()).map((a) => ({ ...a, followed: false }))
+  } catch (error) {
+    animesError.value = error.message
+  } finally {
+    animesLoading.value = false
+  }
+}
 
 const modules = [
   { icon: '📺', title: '追番进度', desc: '续看、收藏、更新提醒，多端同步', bg: 'rgba(30,167,232,.16)' },
@@ -193,6 +265,7 @@ function animateCount(el) {
 }
 
 onMounted(async () => {
+  loadAnimes()
   await nextTick()
   if (typeof IntersectionObserver === 'undefined') {
     document.querySelectorAll('.count').forEach(animateCount)
@@ -370,6 +443,88 @@ onUnmounted(() => numberObserver?.disconnect())
   opacity: .85;
 }
 
+/* ===== Hero 空白处的「动漫合集」竖排栏 =====
+   人物立绘宽约 440px（660px 高 × 2:3）贴在 right:3vw，文案最宽 720px 在左，
+   只有超宽屏中间才留得出整块空白，所以 1600px 以下不渲染这条侧栏，
+   不和原有元素抢空间。 */
+.side-collections {
+  display: none;
+  position: absolute;
+  top: 50%;
+  right: calc(3vw + 465px);
+  width: 214px;
+  z-index: 2;
+  transform: translateY(-50%);
+  padding: 14px 14px 10px;
+  border-radius: 18px;
+  background: var(--glass);
+  border: 1px solid var(--line-soft);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 18px 44px rgba(0,0,0,.35);
+  animation: scIn .8s cubic-bezier(.2,.7,.2,1) .45s both;
+}
+@keyframes scIn {
+  from { opacity: 0; transform: translateY(calc(-50% + 28px)); }
+  to   { opacity: 1; transform: translateY(-50%); }
+}
+@media (min-width: 1600px) {
+  .side-collections { display: block; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .side-collections { animation: none; transform: translateY(-50%); }
+}
+.sc-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 0 2px;
+}
+.sc-head h3 { font-size: 15px; font-weight: 800; }
+.sc-head span { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+.sc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.sc-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 9px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background .2s, border-color .2s, transform .2s;
+}
+.sc-item:hover {
+  background: rgba(30,167,232,.12);
+  border-color: var(--line-soft);
+  transform: translateX(3px);
+}
+.sc-ic {
+  flex: 0 0 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  background: var(--c, rgba(30,167,232,.16));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+.sc-txt { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.sc-txt b {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sc-txt span { font-size: 11px; color: var(--muted); }
+
 /* ===== 通用 section ===== */
 .section {
   max-width: 1180px;
@@ -439,6 +594,14 @@ onUnmounted(() => numberObserver?.disconnect())
   font-size: 12px;
   color: var(--muted);
 }
+.anime-actions {
+  display: flex;
+  gap: 8px;
+}
+.play-btn {
+  text-decoration: none;
+  background: rgba(30,167,232,.2);
+}
 .mini-btn {
   border: 1px solid var(--line);
   background: rgba(30,167,232,.12);
@@ -450,6 +613,36 @@ onUnmounted(() => numberObserver?.disconnect())
   transition: background .2s, color .2s;
 }
 .mini-btn:hover { background: rgba(30,167,232,.24); }
+
+/* ===== 数据加载 / 异常态 ===== */
+.anime-skeleton { pointer-events: none; }
+.skeleton-block {
+  border-radius: 8px;
+  background: linear-gradient(90deg, rgba(255,255,255,.06), rgba(255,255,255,.14), rgba(255,255,255,.06));
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+.sk-cover { display: block; width: 100%; height: 100%; }
+@keyframes shimmer {
+  from { background-position: 200% 0 }
+  to { background-position: -200% 0 }
+}
+.anime-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 26px 24px;
+  border-radius: 16px;
+  border: 1px dashed var(--line);
+  background: rgba(30, 167, 232, .06);
+  color: var(--muted);
+  font-size: 14px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-block { animation: none }
+}
 
 /* ===== 模块 ===== */
 .modules {
