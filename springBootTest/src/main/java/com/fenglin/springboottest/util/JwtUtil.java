@@ -70,6 +70,26 @@ public class JwtUtil {
     }
 
     /**
+     * 签发后台管理员令牌。
+     * <p>与社员令牌的区别是载荷里多一个 {@code role=admin}，
+     * 管理端接口（/api/admin/**）只认带这个标记的 token。
+     *
+     * @param ttlMillis 有效期（毫秒），"记住我" 场景可传更长的值
+     */
+    public String generateAdmin(String username, String nickname, long ttlMillis) {
+        Date now = new Date();
+        Date expiration = new Date(now.getTime() + ttlMillis);
+        return Jwts.builder()
+                .subject(username)
+                .claim("role", "admin")
+                .claim("nickname", nickname)
+                .issuedAt(now)
+                .expiration(expiration)
+                .signWith(key, Jwts.SIG.HS256)
+                .compact();
+    }
+
+    /**
      * 解析 token。
      *
      * @return 解析成功返回 Claims；签名错误、过期、格式非法统一返回 null
@@ -101,6 +121,13 @@ public class JwtUtil {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    /**
+     * 判断 Claims 是否为管理员令牌（role=admin）。
+     */
+    public boolean isAdminClaims(Claims claims) {
+        return claims != null && "admin".equals(claims.get("role", String.class));
     }
 
     /**

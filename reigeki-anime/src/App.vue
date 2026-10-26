@@ -1,6 +1,6 @@
 <template>
   <EmberBackground />
-  <AppTopbar v-if="!isAuthRoute" />
+  <AppTopbar v-if="!isAuthRoute && !isAdminRoute" />
   <router-view />
   <ToastHost />
 </template>
@@ -23,4 +23,6 @@ import ToastHost from './components/ToastHost.vue'
 const route = useRoute()
 // 登录 / 注册页不显示顶栏，避免挤压居中布局
 const isAuthRoute = computed(() => route.name === 'login' || route.name === 'register')
+// 后台管理区有自己的侧边栏布局，不渲染前台社员顶栏
+const isAdminRoute = computed(() => route.path.startsWith('/admin'))
 </script>

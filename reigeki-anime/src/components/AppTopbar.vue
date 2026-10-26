@@ -6,6 +6,9 @@
     </router-link>
 
     <div class="topbar-right">
+      <!-- 后台管理入口：无论社员是否登录都可进入后台登录页 -->
+      <router-link class="topbar-btn topbar-btn--ghost" to="/admin/login">后台管理</router-link>
+
       <!-- 已登录：展示社员信息 + 社员中心入口 + 退出 -->
       <template v-if="isAuthenticated">
         <router-link class="topbar-link" to="/dashboard">社员中心</router-link>

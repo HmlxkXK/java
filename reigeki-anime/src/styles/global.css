@@ -240,8 +240,18 @@ code{
 .topbar-btn{
   padding:8px 15px;border-radius:10px;cursor:pointer;font-size:13px;font-family:inherit;
   border:1px solid var(--line);background:rgba(30,167,232,.1);color:var(--ember);transition:.2s;
+  text-decoration:none;display:inline-block;
 }
 .topbar-btn:hover{background:rgba(30,167,232,.22)}
+/* 实心强调（如「免费注册」） */
+.topbar-btn--solid{
+  background:linear-gradient(90deg,var(--fire-1),var(--fire-2));
+  color:#04263f;font-weight:700;border-color:transparent;
+}
+.topbar-btn--solid:hover{filter:brightness(1.12);background:linear-gradient(90deg,var(--fire-1),var(--fire-2))}
+/* 弱化描边（如「后台管理」这类次要入口） */
+.topbar-btn--ghost{background:transparent;color:var(--muted)}
+.topbar-btn--ghost:hover{background:rgba(30,167,232,.12);color:var(--ember)}
 
 /* ---------- 内容页 ---------- */
 .page{

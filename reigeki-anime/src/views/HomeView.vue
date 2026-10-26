@@ -62,6 +62,24 @@
       </div>
     </section>
 
+    <!-- 宽屏下利用内容栏右侧空白：动漫合集侧栏 -->
+    <aside class="dash-collections" aria-label="动漫合集" v-reveal="{ delay: 200 }">
+      <header class="dc-head">
+        <h3>📚 动漫合集</h3>
+        <span>本周精选</span>
+      </header>
+      <ul class="dc-list">
+        <li v-for="c in collections" :key="c.name" class="dc-item" :style="{ '--c': c.color }">
+          <span class="dc-ic" aria-hidden="true">{{ c.icon }}</span>
+          <div class="dc-txt">
+            <b>{{ c.name }}</b>
+            <span>{{ c.count }} 部 · 持续更新</span>
+          </div>
+        </li>
+      </ul>
+      <p class="dc-note">示例数据 · 等后端「合集接口」上线后换成你的真实收藏。</p>
+    </aside>
+
     <!-- 修改资料弹层 -->
     <Teleport to="body">
       <div v-if="editing" class="modal-mask" @click.self="closeEdit">
@@ -126,6 +144,7 @@ import { updateProfile } from '../api/auth.js'
 import { writeUser } from '../api/session.js'
 import { formatDateTime, formatRemaining } from '../utils/datetime.js'
 import { validateNickname, validatePassword } from '../utils/validators.js'
+import { animeCollections } from '../data/collections.js'
 
 const { state, displayName, tokenPayload, expiresAt, refreshMe } = useAuth()
 
@@ -138,6 +157,9 @@ const modules = [
   { icon: '💬', title: '社区动态', desc: '发帖、评论、同好互动' },
   { icon: '🛡️', title: '同好公会', desc: '建团、组队、排行' }
 ]
+
+// 侧栏展示全部 8 个合集，超高时列表内部滚动
+const collections = animeCollections
 
 const issuedAt = computed(() => {
   const iat = tokenPayload.value?.iat
@@ -248,6 +270,87 @@ onUnmounted(() => clearInterval(ticker))
 </script>
 
 <style scoped>
+/* ===== 宽屏下内容栏右侧空白的「动漫合集」侧栏 =====
+   .page 内容栏最宽 1100px 居中，视口 ≥1660px 时右侧空白 ≥280px，
+   才放得下这条 236px 的固定侧栏；更窄的屏幕不显示，避免遮挡内容。 */
+.dash-collections {
+  display: none;
+  position: fixed;
+  right: 22px;
+  top: 104px;
+  width: 236px;
+  z-index: 2;
+  padding: 14px 14px 12px;
+  border-radius: 18px;
+  background: var(--glass);
+  border: 1px solid var(--line-soft);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 18px 44px rgba(0,0,0,.35);
+}
+@media (min-width: 1660px) {
+  .dash-collections { display: block; }
+}
+.dc-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 0 2px;
+}
+.dc-head h3 { font-size: 15px; font-weight: 800; }
+.dc-head span { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+.dc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: calc(100vh - 240px);
+  overflow-y: auto;
+}
+.dc-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 9px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background .2s, border-color .2s, transform .2s;
+}
+.dc-item:hover {
+  background: rgba(30,167,232,.12);
+  border-color: var(--line-soft);
+  transform: translateX(3px);
+}
+.dc-ic {
+  flex: 0 0 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  background: var(--c, rgba(30,167,232,.16));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+.dc-txt { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.dc-txt b {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dc-txt span { font-size: 11px; color: var(--muted); }
+.dc-note {
+  margin-top: 10px;
+  padding: 0 2px;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
 .panel-edit {
   margin-top: 16px;
 }

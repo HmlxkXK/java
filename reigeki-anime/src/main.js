@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import { onUnauthorized } from './api/session.js'
+import { onUnauthorized, onAdminUnauthorized } from './api/session.js'
 import { pushToast } from './composables/useToast.js'
 import { revealDirective } from './composables/useReveal.js'
 import './styles/global.css'
@@ -29,6 +29,22 @@ onUnauthorized(() => {
   router.replace({
     name: 'login',
     query: current.fullPath && current.fullPath !== '/' ? { redirect: current.fullPath } : {}
+  })
+})
+
+/**
+ * 后台管理端的 401 处理：清管理员会话（session.js 内部已做）并回后台登录页。
+ * 与前台社员的 401 互不干扰——在后台页面里社员 token 过期不会被触发，
+ * 反之亦然。
+ */
+onAdminUnauthorized(() => {
+  const current = router.currentRoute.value
+  if (current.name === 'admin-login') return
+
+  pushToast('后台登录已失效，请重新登录', 'warn')
+  router.replace({
+    name: 'admin-login',
+    query: current.fullPath && current.fullPath !== '/admin' ? { redirect: current.fullPath } : {}
   })
 })
 
