@@ -29,18 +29,15 @@ export function sendCode(email) {
 }
 
 /**
- * 注册。
- * @param {{nickname:string,email:string,password:string,code:string}} payload
+ * 注册（昵称即账号，图片验证码在前端校验，不再发送邮箱/验证码）。
+ * @param {{nickname:string,password:string}} payload
  * @returns {Promise<{id:number,nickname:string,email:string,createTime:string}>}
  */
 export function register(payload) {
   return http.post('/api/auth/register', {
     body: {
       nickname: String(payload.nickname ?? '').trim(),
-      // 邮箱在服务端还会做一次 lowercase + trim，这里先归一化以减少歧义
-      email: String(payload.email ?? '').trim(),
-      password: payload.password,
-      code: String(payload.code ?? '').trim()
+      password: payload.password
     }
   })
 }

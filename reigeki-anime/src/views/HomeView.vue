@@ -22,7 +22,7 @@
         <dl class="kv">
           <div><dt>社员 ID</dt><dd>{{ user?.id ?? '—' }}</dd></div>
           <div><dt>昵称</dt><dd>{{ user?.nickname || '—' }}</dd></div>
-          <div><dt>邮箱</dt><dd>{{ user?.email || '—' }}</dd></div>
+          <div><dt>登录账号</dt><dd>{{ user?.email || '—' }}</dd></div>
           <div><dt>注册时间</dt><dd>{{ user?.createTime || '—' }}</dd></div>
         </dl>
         <p class="panel-note">
@@ -62,22 +62,55 @@
       </div>
     </section>
 
+    <!-- 外部动漫视频平台直达 -->
+    <section class="panel panel-wide" v-reveal>
+      <h2>动漫视频直达 <small>新标签页打开</small></h2>
+      <p class="panel-note">点一下就去热门平台看番，不影响这里的会话。</p>
+      <div class="video-links">
+        <a
+          v-for="v in videoLinks"
+          :key="v.name"
+          class="video-link"
+          :href="v.url"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span class="vl-ic" :style="{ background: v.bg }" aria-hidden="true">{{ v.icon }}</span>
+          <b>{{ v.name }}</b>
+          <span class="vl-desc">{{ v.desc }}</span>
+          <span class="vl-go">去追番 ↗</span>
+        </a>
+      </div>
+    </section>
+
     <!-- 宽屏下利用内容栏右侧空白：动漫合集侧栏 -->
     <aside class="dash-collections" aria-label="动漫合集" v-reveal="{ delay: 200 }">
-      <header class="dc-head">
+      <header
+        class="dc-head fold-head"
+        role="button"
+        tabindex="0"
+        :aria-expanded="collectionsOpen"
+        @click="collectionsOpen = !collectionsOpen"
+        @keydown.enter.prevent="collectionsOpen = !collectionsOpen"
+        @keydown.space.prevent="collectionsOpen = !collectionsOpen"
+      >
         <h3>📚 动漫合集</h3>
-        <span>本周精选</span>
+        <span>本周精选 <i class="fold-caret" :class="{ open: collectionsOpen }" aria-hidden="true">▾</i></span>
       </header>
-      <ul class="dc-list">
-        <li v-for="c in collections" :key="c.name" class="dc-item" :style="{ '--c': c.color }">
-          <span class="dc-ic" aria-hidden="true">{{ c.icon }}</span>
-          <div class="dc-txt">
-            <b>{{ c.name }}</b>
-            <span>{{ c.count }} 部 · 持续更新</span>
-          </div>
-        </li>
-      </ul>
-      <p class="dc-note">示例数据 · 等后端「合集接口」上线后换成你的真实收藏。</p>
+      <Transition name="fold">
+        <div v-show="collectionsOpen">
+          <ul class="dc-list">
+            <li v-for="c in collections" :key="c.name" class="dc-item" :style="{ '--c': c.color }">
+              <span class="dc-ic" aria-hidden="true">{{ c.icon }}</span>
+              <div class="dc-txt">
+                <b>{{ c.name }}</b>
+                <span>{{ c.count }} 部 · 持续更新</span>
+              </div>
+            </li>
+          </ul>
+          <p class="dc-note">示例数据 · 等后端「合集接口」上线后换成你的真实收藏。</p>
+        </div>
+      </Transition>
     </aside>
 
     <!-- 修改资料弹层 -->
@@ -160,6 +193,19 @@ const modules = [
 
 // 侧栏展示全部 8 个合集，超高时列表内部滚动
 const collections = animeCollections
+
+// 「动漫合集 / 本周精选」折叠状态，默认展开
+const collectionsOpen = ref(true)
+
+/* 外部动漫视频平台直达链接（新标签页打开，rel 防止反向操纵） */
+const videoLinks = [
+  { name: '哔哩哔哩动漫', desc: '新番连载 · 弹幕同好', url: 'https://www.bilibili.com/anime/', icon: '📺', bg: 'linear-gradient(135deg,#fb7299,#fc8bab)' },
+  { name: '腾讯视频动漫', desc: '国漫日漫 · 高清正版', url: 'https://v.qq.com/channel/cartoon', icon: '🎬', bg: 'linear-gradient(135deg,#12b7f5,#4facfe)' },
+  { name: '爱奇艺动漫', desc: '热门番剧 · 独家上新', url: 'https://www.iqiyi.com/donghua/', icon: '🌸', bg: 'linear-gradient(135deg,#22c55e,#86efac)' },
+  { name: '优酷动漫', desc: '经典番剧 · 追更不断', url: 'https://www.youku.com/animation/', icon: '🐾', bg: 'linear-gradient(135deg,#f59e0b,#fcd34d)' },
+  { name: 'AcFun 动漫', desc: '弹幕文化 · 同好聚集', url: 'https://www.acfun.cn/v/ac-top-anime', icon: '💫', bg: 'linear-gradient(135deg,#ff5d8f,#ff8fb1)' },
+  { name: '咪咕动漫', desc: '正版国漫 · 海量免费', url: 'https://www.migu.cn/', icon: '📱', bg: 'linear-gradient(135deg,#8b5cf6,#c4b5fd)' }
+]
 
 const issuedAt = computed(() => {
   const iat = tokenPayload.value?.iat
@@ -270,6 +316,47 @@ onUnmounted(() => clearInterval(ticker))
 </script>
 
 <style scoped>
+/* ===== 外部动漫视频平台直达 ===== */
+.video-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+.video-link {
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  grid-template-rows: auto auto auto;
+  column-gap: 12px;
+  row-gap: 4px;
+  align-items: center;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(0,0,0,.2);
+  border: 1px solid var(--line-soft);
+  text-decoration: none;
+  color: var(--text);
+  transition: transform .2s, border-color .2s, background .2s;
+}
+.video-link:hover {
+  transform: translateY(-3px);
+  border-color: var(--fire-1);
+  background: rgba(30,167,232,.10);
+}
+.vl-ic {
+  grid-row: 1 / 4;
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
+}
+.video-link b { font-size: 15px; }
+.vl-desc { font-size: 12px; color: var(--muted); }
+.vl-go { font-size: 12px; color: var(--ember); margin-top: 4px; }
+
 /* ===== 宽屏下内容栏右侧空白的「动漫合集」侧栏 =====
    .page 内容栏最宽 1100px 居中，视口 ≥1660px 时右侧空白 ≥280px，
    才放得下这条 236px 的固定侧栏；更窄的屏幕不显示，避免遮挡内容。 */
@@ -300,6 +387,29 @@ onUnmounted(() => clearInterval(ticker))
 }
 .dc-head h3 { font-size: 15px; font-weight: 800; }
 .dc-head span { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+
+/* ===== 本周精选：可折叠 ===== */
+.fold-head { cursor: pointer; user-select: none; transition: color .2s; }
+.fold-head:hover h3, .fold-head:hover span { color: var(--ember); }
+.fold-head:focus-visible { outline: 2px solid var(--fire-1); outline-offset: 4px; border-radius: 8px; }
+.fold-caret {
+  display: inline-block;
+  font-style: normal;
+  font-size: 12px;
+  margin-left: 2px;
+  transition: transform .25s ease;
+}
+.fold-caret.open { transform: rotate(180deg); }
+.fold-enter-active, .fold-leave-active {
+  transition: opacity .25s ease, transform .25s ease, max-height .3s ease;
+  max-height: 1200px;
+  overflow: hidden;
+}
+.fold-enter-from, .fold-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+  max-height: 0;
+}
 .dc-list {
   list-style: none;
   margin: 0;

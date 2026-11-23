@@ -8,7 +8,6 @@ import com.fenglin.springboottest.dto.RegisterRequest;
 import com.fenglin.springboottest.entity.User;
 import com.fenglin.springboottest.mapper.UserMapper;
 import com.fenglin.springboottest.service.AuthService;
-import com.fenglin.springboottest.service.VerificationCodeStore;
 import com.fenglin.springboottest.util.JwtUtil;
 import com.fenglin.springboottest.vo.LoginVO;
 import com.fenglin.springboottest.vo.UserVO;
@@ -19,14 +18,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
-import java.util.regex.Pattern;
 
 /**
  * 认证服务实现。
  * <p>数据访问层已从 JPA 迁移到 MyBatis-Plus：
  * <ul>
- *   <li>existsByEmail  -> selectCount（存在即 &gt;0）；</li>
- *   <li>findByEmail    -> selectOne（eq email）；</li>
+ *   <li>existsByAccount -> selectCount（存在即 &gt;0）；</li>
+ *   <li>findByAccount   -> selectOne（eq email 列存昵称账号）；</li>
  *   <li>save           -> insert（新纪录均无主键，无需 saveOrUpdate 分支）。</li>
  * </ul>
  */
@@ -35,65 +33,51 @@ public class AuthServiceImpl implements AuthService {
 
     private static final Logger log = LoggerFactory.getLogger(AuthServiceImpl.class);
 
-    /** 与前端保持一致的邮箱格式校验 */
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
-
     /** "记住我" 时的 token 有效期：7 天 */
     private static final long REMEMBER_ME_TTL_MILLIS = Duration.ofDays(7).toMillis();
 
     private final UserMapper userMapper;
-    private final VerificationCodeStore codeStore;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
     public AuthServiceImpl(UserMapper userMapper,
-                           VerificationCodeStore codeStore,
                            PasswordEncoder passwordEncoder,
                            JwtUtil jwtUtil) {
         this.userMapper = userMapper;
-        this.codeStore = codeStore;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
     }
 
     @Override
-    public String sendCode(String email) {
-        String normalized = normalize(email);
-        if (!EMAIL_PATTERN.matcher(normalized).matches()) {
-            throw new BizException("邮箱格式不正确");
+    public String sendCode(String account) {
+        // 图片验证码改由前端 canvas 生成，此接口保留仅为兼容旧调用方，不再发送邮件。
+        // 若调用方传入的是昵称账号，仅做一次占用提示。
+        String normalized = normalize(account);
+        if (existsByAccount(normalized)) {
+            throw new BizException("该昵称已被注册，请直接登录");
         }
-        if (existsByEmail(normalized)) {
-            throw new BizException("该邮箱已注册，请直接登录");
-        }
-
-        String code = codeStore.generate(normalized);
-
-        // 真实项目这里应调用邮件服务把验证码发出去；
-        // 演示环境直接返回明文，前端 alert 出来方便自测。
-        log.info("生成注册验证码 -> email={}, code={}（演示环境明文返回）", normalized, code);
-        return code;
+        log.info("收到验证码请求（注册已改为前端图片验证码，无需后端发送）-> account={}", normalized);
+        return "";
     }
 
     @Override
     @Transactional
     public UserVO register(RegisterRequest request) {
-        String email = normalize(request.getEmail());
+        // 昵称即登录账号，统一小写去空格后作为唯一账号
+        String account = normalize(request.getNickname());
 
-        if (existsByEmail(email)) {
-            throw new BizException("该邮箱已被注册");
-        }
-        // 先校验验证码，通过后立即消费，避免一次验证码反复注册
-        if (!codeStore.verifyAndConsume(email, request.getCode())) {
-            throw new BizException("验证码错误或已过期");
+        if (existsByAccount(account)) {
+            throw new BizException("该昵称已被注册，请换一个");
         }
 
         User user = new User();
+        // email 列保持表结构不变，实际存放登录账号（昵称）
+        user.setEmail(account);
         user.setNickname(request.getNickname().trim());
-        user.setEmail(email);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         userMapper.insert(user);
-        log.info("新社员注册成功 -> id={}, email={}", user.getId(), user.getEmail());
+        log.info("新社员注册成功 -> id={}, account={}", user.getId(), account);
         return UserVO.from(user);
     }
 
@@ -133,9 +117,56 @@ public class AuthServiceImpl implements AuthService {
         return UserVO.from(user);
     }
 
-    /** 注册时判断邮箱是否已占用 */
-    private boolean existsByEmail(String email) {
-        return userMapper.selectCount(new LambdaQueryWrapper<User>().eq(User::getEmail, email)) > 0;
+    @Override
+    @Transactional
+    public UserVO updateProfile(Long userId, ProfileRequest request) {
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new BizException(Result.CODE_UNAUTHORIZED, "用户不存在或已注销");
+        }
+
+        String newNickname = request.getNickname();
+        boolean wantNickname = newNickname != null && !newNickname.isBlank();
+        String newPassword = request.getNewPassword();
+        boolean wantPassword = newPassword != null && !newPassword.isBlank();
+
+        if (!wantNickname && !wantPassword) {
+            throw new BizException("请先填写要修改的内容");
+        }
+
+        // 改昵称：昵称即登录账号（存于 email 列），需校验唯一
+        if (wantNickname) {
+            String account = normalize(newNickname);
+            Long owner = userMapper.selectOne(new LambdaQueryWrapper<User>()
+                            .eq(User::getEmail, account))
+                    == null ? null : userMapper.selectOne(new LambdaQueryWrapper<User>()
+                            .eq(User::getEmail, account)).getId();
+            if (owner != null && !owner.equals(userId)) {
+                throw new BizException("该昵称已被注册，请换一个");
+            }
+            user.setNickname(newNickname.trim());
+            user.setEmail(account);
+        }
+
+        // 改密码：先校验原密码
+        if (wantPassword) {
+            if (request.getOldPassword() == null || request.getOldPassword().isBlank()) {
+                throw new BizException("修改密码需先填写原密码");
+            }
+            if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+                throw new BizException("原密码不正确");
+            }
+            user.setPassword(passwordEncoder.encode(newPassword));
+        }
+
+        userMapper.updateById(user);
+        log.info("社员资料更新 -> id={}, nickname={}", user.getId(), user.getNickname());
+        return UserVO.from(user);
+    }
+
+    /** 注册时判断登录账号（昵称，存于 email 列）是否已占用 */
+    private boolean existsByAccount(String account) {
+        return userMapper.selectCount(new LambdaQueryWrapper<User>().eq(User::getEmail, account)) > 0;
     }
 
     /** 邮箱统一按小写去空格处理，避免大小写导致的重复注册 */

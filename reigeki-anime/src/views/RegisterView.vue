@@ -20,14 +20,14 @@
 
       <form novalidate @submit.prevent="onSubmit">
         <div class="field" :class="{ 'has-error': errors.nickname }">
-          <label for="nick">昵称</label>
+          <label for="nick">昵称（登录账号）</label>
           <div class="ctl">
             <span class="ic" aria-hidden="true">🎭</span>
             <input
               id="nick"
               v-model.trim="form.nickname"
               type="text"
-              placeholder="给自己起个燃系名字"
+              placeholder="2-50 字，作为登录账号"
               autocomplete="nickname"
               maxlength="50"
               :aria-invalid="Boolean(errors.nickname)"
@@ -37,26 +37,6 @@
             />
           </div>
           <p v-if="errors.nickname" id="nick-err" class="err">{{ errors.nickname }}</p>
-        </div>
-
-        <div class="field" :class="{ 'has-error': errors.email }">
-          <label for="email">账号 / 邮箱</label>
-          <div class="ctl">
-            <span class="ic" aria-hidden="true">👤</span>
-            <input
-              id="email"
-              v-model.trim="form.email"
-              type="email"
-              placeholder="用于登录与找回密码"
-              autocomplete="email"
-              maxlength="100"
-              :aria-invalid="Boolean(errors.email)"
-              aria-describedby="email-err"
-              @input="clearError('email')"
-              @blur="revalidate('email')"
-            />
-          </div>
-          <p v-if="errors.email" id="email-err" class="err">{{ errors.email }}</p>
         </div>
 
         <div class="field" :class="{ 'has-error': errors.password }">
@@ -113,25 +93,33 @@
         </div>
 
         <div class="field" :class="{ 'has-error': errors.code }">
-          <label for="code">邮箱验证码</label>
+          <label for="code">图片验证码</label>
           <div class="code-row">
             <input
               id="code"
               v-model.trim="form.code"
               type="text"
-              inputmode="numeric"
-              placeholder="6 位验证码"
-              maxlength="6"
-              autocomplete="one-time-code"
+              inputmode="text"
+              placeholder="输入右侧字符"
+              maxlength="4"
+              autocomplete="off"
               :aria-invalid="Boolean(errors.code)"
               aria-describedby="code-err"
               @input="clearError('code')"
             />
-            <button
-              type="button"
-              :disabled="counting || sending"
-              @click="onSendCode"
-            >{{ sending ? '发送中…' : codeText }}</button>
+            <canvas
+              ref="captchaCanvas"
+              class="captcha-canvas"
+              width="120"
+              height="42"
+              role="button"
+              tabindex="0"
+              title="点击刷新验证码"
+              aria-label="图片验证码，点击刷新"
+              @click="refreshCaptcha"
+              @keydown.enter.prevent="refreshCaptcha"
+              @keydown.space.prevent="refreshCaptcha"
+            ></canvas>
           </div>
           <p v-if="errors.code" id="code-err" class="err">{{ errors.code }}</p>
         </div>
@@ -156,24 +144,18 @@
 /**
  * 注册页。
  *
- * 相比原实现的改动：
- *   - 修掉一个真 bug：原来「获取验证码」按钮只在**成功之后**才进入倒计时，
- *     请求飞行期间是可以连点的，连点两次就会发两条验证码、并弹两个 alert。
- *     现在加了 sending 状态，请求期间按钮直接禁用。
- *   - 倒计时改为基于截止时间戳计算，而不是 setInterval 里 t--。
- *     标签页切到后台时浏览器会节流定时器，自减写法会走慢（切回来还剩一堆秒数），
- *     时间戳写法无论怎么节流，显示的都是真实剩余秒数。
- *   - 逐字段内联报错 + 密码强度提示，不再靠 alert 一个个试。
- *   - 注册成功后跳登录页并回填邮箱（后端注册接口不返回 token，无法自动登录）。
+ * 账号体系：昵称即登录账号（唯一），注册不再需要邮箱。
+ * 验证码：前端 canvas 本地生成的图片验证码，本地比对，不发送到后端；
+ *         点击图片可刷新。这样后端 register 只需 nickname + password。
+ * 注册成功后跳登录页并回填昵称（后端注册接口不返回 token，无法自动登录）。
  */
 
-import { reactive, ref, computed, onUnmounted } from 'vue'
+import { reactive, ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth.js'
 import { useToast } from '../composables/useToast.js'
 import {
   validateNickname,
-  validateEmail,
   validatePassword,
   validateConfirmPassword,
   validateCode,
@@ -182,13 +164,10 @@ import {
 
 const router = useRouter()
 const toast = useToast()
-const { register, sendCode } = useAuth()
-
-const COOLDOWN_SECONDS = 60
+const { register } = useAuth()
 
 const form = reactive({
   nickname: '',
-  email: '',
   password: '',
   confirm: '',
   code: '',
@@ -197,7 +176,6 @@ const form = reactive({
 
 const errors = reactive({
   nickname: '',
-  email: '',
   password: '',
   confirm: '',
   code: '',
@@ -205,33 +183,68 @@ const errors = reactive({
 })
 
 const showPassword = ref(false)
-const sending = ref(false)
 const submitting = ref(false)
 
-// ---- 验证码倒计时：基于截止时间戳，不受定时器节流影响 ----
-const cooldownUntil = ref(0)
-const now = ref(Date.now())
-let ticker = null
+// ---- 图片验证码（canvas 本地生成，忽略大小写比对） ----
+const captchaCanvas = ref(null)
+const captchaText = ref('')
+// 去掉了易混淆的 0/O/1/l/I
+const CAPTCHA_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'
 
-const remaining = computed(() =>
-  cooldownUntil.value ? Math.max(0, Math.ceil((cooldownUntil.value - now.value) / 1000)) : 0
-)
-const counting = computed(() => remaining.value > 0)
-const codeText = computed(() => (counting.value ? `${remaining.value}s` : '获取验证码'))
+function drawCaptcha() {
+  const canvas = captchaCanvas.value
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  const w = canvas.width
+  const h = canvas.height
 
-function startCooldown() {
-  cooldownUntil.value = Date.now() + COOLDOWN_SECONDS * 1000
-  now.value = Date.now()
-  clearInterval(ticker)
-  ticker = setInterval(() => {
-    now.value = Date.now()
-    if (now.value >= cooldownUntil.value) {
-      clearInterval(ticker)
-      ticker = null
-      cooldownUntil.value = 0
-    }
-  }, 250)
+  ctx.fillStyle = '#eef4fb'
+  ctx.fillRect(0, 0, w, h)
+
+  // 生成 4 位随机字符
+  let text = ''
+  for (let i = 0; i < 4; i++) {
+    text += CAPTCHA_CHARS[Math.floor(Math.random() * CAPTCHA_CHARS.length)]
+  }
+  captchaText.value = text
+
+  // 字符：随机颜色、轻微旋转、逐字绘制
+  const colors = ['#185fa5', '#993c1d', '#0f6e56', '#534ab7', '#a32d2d']
+  ctx.font = 'bold 24px sans-serif'
+  ctx.textBaseline = 'middle'
+  for (let i = 0; i < text.length; i++) {
+    ctx.save()
+    ctx.translate(12 + i * 27, h / 2)
+    ctx.rotate((Math.random() - 0.5) * 0.4)
+    ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)]
+    ctx.fillText(text[i], 0, 0)
+    ctx.restore()
+  }
+
+  // 干扰线
+  ctx.strokeStyle = 'rgba(40,90,150,.25)'
+  ctx.lineWidth = 1
+  for (let i = 0; i < 4; i++) {
+    ctx.beginPath()
+    ctx.moveTo(Math.random() * w, Math.random() * h)
+    ctx.lineTo(Math.random() * w, Math.random() * h)
+    ctx.stroke()
+  }
+
+  // 噪点
+  for (let i = 0; i < 24; i++) {
+    ctx.fillStyle = `rgba(30,70,120,${Math.random() * 0.35})`
+    ctx.fillRect(Math.random() * w, Math.random() * h, 2, 2)
+  }
 }
+
+function refreshCaptcha() {
+  form.code = ''
+  errors.code = ''
+  drawCaptcha()
+}
+
+onMounted(drawCaptcha)
 
 // ---- 校验 ----
 const strength = computed(() => passwordStrength(form.password))
@@ -242,61 +255,29 @@ function clearError(field) {
 
 /** 失焦时补一次校验，但只在用户已经输入过内容时提示，避免空表单满屏红字 */
 function revalidate(field) {
-  const map = {
-    nickname: () => validateNickname(form.nickname),
-    email: () => validateEmail(form.email)
+  if (field === 'nickname') {
+    if (!form.nickname) return
+    errors.nickname = validateNickname(form.nickname)
   }
-  const fn = map[field]
-  if (!fn) return
-  const value = form[field]
-  if (!value) return
-  errors[field] = fn()
 }
 
 function validateAll() {
   errors.nickname = validateNickname(form.nickname)
-  errors.email = validateEmail(form.email)
   errors.password = validatePassword(form.password)
   errors.confirm = validateConfirmPassword(form.password, form.confirm)
   errors.code = validateCode(form.code)
+  if (!errors.code && form.code.toUpperCase() !== captchaText.value.toUpperCase()) {
+    errors.code = '验证码不正确'
+  }
   errors.agree = form.agree ? '' : '请先阅读并同意用户协议与隐私政策'
   return Object.values(errors).every((v) => !v)
-}
-
-// ---- 发送验证码 ----
-async function onSendCode() {
-  if (sending.value || counting.value) return
-
-  const emailError = validateEmail(form.email)
-  if (emailError) {
-    errors.email = emailError
-    toast.warn(emailError)
-    return
-  }
-
-  sending.value = true
-  try {
-    const data = await sendCode(form.email)
-    // 演示环境后端把明文验证码放在返回值里；真实环境这里应是一句「已发送」
-    if (/^\d{6}$/.test(String(data || ''))) {
-      form.code = String(data)
-      errors.code = ''
-      toast.success(`演示环境验证码 ${data}，已自动填入`)
-    } else {
-      toast.success(data || '验证码已发送，请查收邮箱')
-    }
-    startCooldown()
-  } catch (error) {
-    toast.error(error.message)
-  } finally {
-    sending.value = false
-  }
 }
 
 // ---- 提交注册 ----
 async function onSubmit() {
   if (submitting.value) return
   if (!validateAll()) {
+    if (errors.code === '验证码不正确') refreshCaptcha()
     toast.warn('请先修正表单中标红的内容')
     return
   }
@@ -305,9 +286,7 @@ async function onSubmit() {
   try {
     const user = await register({
       nickname: form.nickname,
-      email: form.email,
-      password: form.password,
-      code: form.code
+      password: form.password
     })
     toast.success(`🎉 注册成功，欢迎加入燃尽动漫，${user?.nickname || form.nickname}！`)
 
@@ -315,20 +294,14 @@ async function onSubmit() {
     form.password = ''
     form.confirm = ''
 
-    router.replace({ name: 'login', query: { email: form.email } })
+    router.replace({ name: 'login', query: { account: form.nickname } })
   } catch (error) {
     toast.error(error.message)
     // 把后端的字段级文案落到对应输入框上，用户不用自己猜是哪里错了
-    if (/验证码/.test(error.message)) errors.code = error.message
-    else if (/邮箱/.test(error.message)) errors.email = error.message
-    else if (/昵称/.test(error.message)) errors.nickname = error.message
+    if (/昵称|账号/.test(error.message)) errors.nickname = error.message
     else if (/密码/.test(error.message)) errors.password = error.message
   } finally {
     submitting.value = false
   }
 }
-
-onUnmounted(() => {
-  clearInterval(ticker)
-})
 </script>

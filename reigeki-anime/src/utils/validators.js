@@ -3,21 +3,21 @@
  *
  * 这些规则与后端 dto/RegisterRequest.java、dto/LoginRequest.java 上的
  * Bean Validation 注解**一一对应**，阈值刻意保持一致：
- *   nickname  @NotBlank, @Size(max=50)
- *   email     @NotBlank, @Email, @Size(max=100)
+ *   nickname  @NotBlank, @Size(min=2,max=50), 账号字符规则
  *   password  @NotBlank, @Size(min=8, max=64)
- *   code      @NotBlank, @Pattern(^\d{6}$)
+ *
+ * 注册不再需要邮箱：昵称即登录账号。图片验证码由前端 canvas 生成并在本地校验，
+ * 不发送至后端。
  *
  * 前端校验只为「即时反馈、少一次无效请求」，**不是安全边界**，
  * 后端始终会再校验一遍。所以这里宁可宽松也不要更严，
  * 否则会出现「前端拦下但后端其实接受」的假报错。
  */
 
-/** 与后端 AuthServiceImpl.EMAIL_PATTERN 完全相同的正则 */
-const EMAIL_PATTERN = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
-
+/** 昵称（登录账号）允许的字符：字母、数字、下划线、中文、连字符，长度 2-50 */
+const NICKNAME_PATTERN = /^[\w\u4e00-\u9fa5-]+$/
+const NICKNAME_MIN = 2
 const NICKNAME_MAX = 50
-const EMAIL_MAX = 100
 const PASSWORD_MIN = 8
 const PASSWORD_MAX = 64
 
@@ -25,16 +25,9 @@ const PASSWORD_MAX = 64
 export function validateNickname(value) {
   const v = String(value ?? '').trim()
   if (!v) return '请填写昵称'
+  if (v.length < NICKNAME_MIN) return `昵称至少 ${NICKNAME_MIN} 个字符`
   if (v.length > NICKNAME_MAX) return `昵称最长 ${NICKNAME_MAX} 个字符`
-  return ''
-}
-
-/** @returns {string} 错误文案，空串表示通过 */
-export function validateEmail(value) {
-  const v = String(value ?? '').trim()
-  if (!v) return '请填写邮箱'
-  if (v.length > EMAIL_MAX) return `邮箱最长 ${EMAIL_MAX} 个字符`
-  if (!EMAIL_PATTERN.test(v)) return '邮箱格式不正确'
+  if (!NICKNAME_PATTERN.test(v)) return '昵称只能包含字母、数字、下划线、中文和连字符'
   return ''
 }
 
@@ -54,12 +47,9 @@ export function validateConfirmPassword(password, confirm) {
   return ''
 }
 
-/** @returns {string} 错误文案，空串表示通过 */
+/** 图片验证码：只校验是否填写，正确性由 canvas 组件本地比对 */
 export function validateCode(value) {
-  const v = String(value ?? '').trim()
-  if (!v) return '请填写邮箱验证码'
-  if (!/^\d{6}$/.test(v)) return '验证码为 6 位数字'
-  return ''
+  return String(value ?? '').trim() ? '' : '请填写图片验证码'
 }
 
 /** 登录页只要求非空，避免和后端的「账号或密码错误」重复提示 */

@@ -1749,3 +1749,340 @@ Identify and stop the process that's listening on port 8081 or configure this ap
 2026-10-26 10:03:07  DEBUG c.f.s.mapper.AnimeEpisodeMapper.selectById.debug 135:==>  Preparing: SELECT id,anime_id,episode_no,title,video_path,duration_seconds,create_time FROM anime_episode WHERE id=?
 2026-10-26 10:03:07  DEBUG c.f.s.mapper.AnimeEpisodeMapper.selectById.debug 135:==> Parameters: 1(Long)
 2026-10-26 10:03:07  DEBUG c.f.s.mapper.AnimeEpisodeMapper.selectById.debug 135:<==      Total: 1
+2026-11-23 09:00:59  INFO c.fenglin.springboottest.SpringBootTestApplication.logStarting 53:Starting SpringBootTestApplication using Java 21.0.10 with PID 4140 (D:\workSpace\java\springBootTest\target\classes started by Administrator in D:\workSpace\java\springBootTest)
+2026-11-23 09:00:59  INFO c.fenglin.springboottest.SpringBootTestApplication.logStartupProfileInfo 658:The following 1 profile is active: "dev"
+2026-11-23 09:00:59  INFO o.s.b.d.env.DevToolsPropertyDefaultsPostProcessor.logTo 252:Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-11-23 09:00:59  INFO o.s.b.d.env.DevToolsPropertyDefaultsPostProcessor.logTo 252:For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-11-23 09:01:00  INFO o.s.boot.web.embedded.tomcat.TomcatWebServer.initialize 111:Tomcat initialized with port 8081 (http)
+2026-11-23 09:01:00  INFO org.apache.catalina.core.StandardService.log 168:Starting service [Tomcat]
+2026-11-23 09:01:00  INFO org.apache.catalina.core.StandardEngine.log 168:Starting Servlet engine: [Apache Tomcat/10.1.40]
+2026-11-23 09:01:00  INFO o.a.c.core.ContainerBase.[Tomcat].[localhost].[/].log 168:Initializing Spring embedded WebApplicationContext
+2026-11-23 09:01:00  INFO o.s.b.w.s.c.ServletWebServerApplicationContext.prepareWebApplicationContext 301:Root WebApplicationContext: initialization completed in 1010 ms
+2026-11-23 09:01:01  INFO c.f.springboottest.service.impl.VideoServiceImpl.<init> 59:视频根目录 -> D:\workSpace\java\springBootTest\videos
+2026-11-23 09:01:01  INFO o.s.b.a.web.servlet.WelcomePageHandlerMapping.<init> 59:Adding welcome page: class path resource [static/index.html]
+2026-11-23 09:01:01  INFO o.s.b.d.autoconfigure.OptionalLiveReloadServer.startServer 59:LiveReload server is running on port 35729
+2026-11-23 09:01:01  INFO o.s.boot.web.embedded.tomcat.TomcatWebServer.start 243:Tomcat started on port 8081 (http) with context path '/'
+2026-11-23 09:01:01  INFO c.fenglin.springboottest.SpringBootTestApplication.logStarted 59:Started SpringBootTestApplication in 2.19 seconds (process running for 2.526)
+2026-11-23 09:01:01  INFO c.f.springboottest.config.DataSourceDiagnostics.reportPoolSettings 51:HikariCP 生效参数 -> pool=ReigekiHikariPool, maximumPoolSize=20, minimumIdle=5, connectionTimeout=10000ms, validationTimeout=3000ms, maxLifetime=1800s, idleTimeout=600s, keepaliveTime=300s, leakDetectionThreshold=20000ms
+2026-11-23 09:01:01  INFO com.zaxxer.hikari.HikariDataSource.getConnection 109:ReigekiHikariPool - Starting...
+2026-11-23 09:01:01  INFO com.zaxxer.hikari.pool.HikariPool.checkFailFast 554:ReigekiHikariPool - Added connection com.mysql.cj.jdbc.ConnectionImpl@1ad8ee96
+2026-11-23 09:01:01  INFO com.zaxxer.hikari.HikariDataSource.getConnection 122:ReigekiHikariPool - Start completed.
+2026-11-23 09:01:01  INFO c.f.springboottest.config.DataSourceDiagnostics.probe 77:数据库连接正常 -> MySQL 8.0.39（驱动 MySQL Connector/J mysql-connector-j-9.1.0 (Revision: cf2917ea44ae2e43a4514a33771035aa99de73bf)）, 连接耗时 246ms, URL=jdbc:mysql://localhost:3306/reigeki_anime?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL&autoReconnect=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=250&prepStmtCacheSqlLimit=2048&cacheResultSetMetadata=true&cacheServerConfiguration=true&useLocalSessionState=true&elideSetAutoCommits=true&maintainTimeStats=false&rewriteBatchedStatements=true&tcpKeepAlive=true&connectTimeout=10000&socketTimeout=60000
+2026-11-23 09:01:01  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:==>  Preparing: SELECT COUNT( * ) AS total FROM t_user WHERE (email = ?)
+2026-11-23 09:01:01  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:==> Parameters: reigeki@demo.com(String)
+2026-11-23 09:01:01  INFO o.s.b.a.logging.ConditionEvaluationReportLogger.logMessage 82:
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-11-23 09:01:01  ERROR org.springframework.boot.SpringApplication.reportFailure 858:Application run failed
+org.springframework.jdbc.BadSqlGrammarException: 
+### Error querying database.  Cause: java.sql.SQLSyntaxErrorException: Table 'reigeki_anime.t_user' doesn't exist
+### The error may exist in com/fenglin/springboottest/mapper/UserMapper.java (best guess)
+### The error may involve defaultParameterMap
+### The error occurred while setting parameters
+### SQL: SELECT COUNT( * ) AS total FROM t_user      WHERE  (email = ?)
+### Cause: java.sql.SQLSyntaxErrorException: Table 'reigeki_anime.t_user' doesn't exist
+; bad SQL grammar []
+	at org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator.doTranslate(SQLErrorCodeSQLExceptionTranslator.java:246)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:107)
+	at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:92)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:439)
+	at jdk.proxy2/jdk.proxy2.$Proxy76.selectOne(Unknown Source)
+	at org.mybatis.spring.SqlSessionTemplate.selectOne(SqlSessionTemplate.java:160)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperMethod.execute(MybatisMapperMethod.java:87)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy$PlainMethodInvoker.invoke(MybatisMapperProxy.java:152)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy.invoke(MybatisMapperProxy.java:89)
+	at jdk.proxy3/jdk.proxy3.$Proxy83.selectCount(Unknown Source)
+	at com.fenglin.springboottest.config.DataInitializer.seedUser(DataInitializer.java:64)
+	at com.fenglin.springboottest.config.DataInitializer.lambda$initDemoData$0(DataInitializer.java:51)
+	at org.springframework.boot.SpringApplication.lambda$callRunner$4(SpringApplication.java:785)
+	at org.springframework.util.function.ThrowingConsumer$1.acceptWithException(ThrowingConsumer.java:82)
+	at org.springframework.util.function.ThrowingConsumer.accept(ThrowingConsumer.java:60)
+	at org.springframework.util.function.ThrowingConsumer$1.accept(ThrowingConsumer.java:86)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:797)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:785)
+	at org.springframework.boot.SpringApplication.lambda$callRunners$3(SpringApplication.java:773)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.base/java.util.stream.SortedOps$SizedRefSortingSink.end(SortedOps.java:357)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:510)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:773)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:325)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1362)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1351)
+	at com.fenglin.springboottest.SpringBootTestApplication.main(SpringBootTestApplication.java:13)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50)
+Caused by: java.sql.SQLSyntaxErrorException: Table 'reigeki_anime.t_user' doesn't exist
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:988)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.execute(ClientPreparedStatement.java:382)
+	at com.zaxxer.hikari.pool.ProxyPreparedStatement.execute(ProxyPreparedStatement.java:44)
+	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.execute(HikariProxyPreparedStatement.java)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.apache.ibatis.logging.jdbc.PreparedStatementLogger.invoke(PreparedStatementLogger.java:58)
+	at jdk.proxy4/jdk.proxy4.$Proxy97.execute(Unknown Source)
+	at org.apache.ibatis.executor.statement.PreparedStatementHandler.query(PreparedStatementHandler.java:65)
+	at org.apache.ibatis.executor.statement.RoutingStatementHandler.query(RoutingStatementHandler.java:80)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:61)
+	at jdk.proxy2/jdk.proxy2.$Proxy96.query(Unknown Source)
+	at org.apache.ibatis.executor.SimpleExecutor.doQuery(SimpleExecutor.java:65)
+	at org.apache.ibatis.executor.BaseExecutor.queryFromDatabase(BaseExecutor.java:336)
+	at org.apache.ibatis.executor.BaseExecutor.query(BaseExecutor.java:158)
+	at org.apache.ibatis.executor.CachingExecutor.query(CachingExecutor.java:110)
+	at com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor.intercept(MybatisPlusInterceptor.java:81)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:59)
+	at jdk.proxy2/jdk.proxy2.$Proxy95.query(Unknown Source)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:154)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:147)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:142)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectOne(DefaultSqlSession.java:75)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:425)
+	... 31 common frames omitted
+2026-11-23 09:01:01  INFO o.s.boot.web.embedded.tomcat.GracefulShutdown.shutDownGracefully 54:Commencing graceful shutdown. Waiting for active requests to complete
+2026-11-23 09:01:01  INFO o.s.boot.web.embedded.tomcat.GracefulShutdown.doShutdown 76:Graceful shutdown complete
+2026-11-23 09:01:01  INFO com.zaxxer.hikari.HikariDataSource.close 349:ReigekiHikariPool - Shutdown initiated...
+2026-11-23 09:01:02  INFO com.zaxxer.hikari.HikariDataSource.close 351:ReigekiHikariPool - Shutdown completed.
+2026-11-23 09:31:48  INFO c.fenglin.springboottest.SpringBootTestApplication.logStarting 53:Starting SpringBootTestApplication using Java 21.0.10 with PID 8696 (D:\workSpace\java\springBootTest\target\classes started by Administrator in D:\workSpace\java\springBootTest)
+2026-11-23 09:31:48  INFO c.fenglin.springboottest.SpringBootTestApplication.logStartupProfileInfo 658:The following 1 profile is active: "dev"
+2026-11-23 09:31:48  INFO o.s.b.d.env.DevToolsPropertyDefaultsPostProcessor.logTo 252:Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-11-23 09:31:48  INFO o.s.b.d.env.DevToolsPropertyDefaultsPostProcessor.logTo 252:For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-11-23 09:31:49  INFO o.s.boot.web.embedded.tomcat.TomcatWebServer.initialize 111:Tomcat initialized with port 8081 (http)
+2026-11-23 09:31:49  INFO org.apache.catalina.core.StandardService.log 168:Starting service [Tomcat]
+2026-11-23 09:31:49  INFO org.apache.catalina.core.StandardEngine.log 168:Starting Servlet engine: [Apache Tomcat/10.1.40]
+2026-11-23 09:31:49  INFO o.a.c.core.ContainerBase.[Tomcat].[localhost].[/].log 168:Initializing Spring embedded WebApplicationContext
+2026-11-23 09:31:49  INFO o.s.b.w.s.c.ServletWebServerApplicationContext.prepareWebApplicationContext 301:Root WebApplicationContext: initialization completed in 992 ms
+2026-11-23 09:31:49  INFO c.f.springboottest.service.impl.VideoServiceImpl.<init> 59:视频根目录 -> D:\workSpace\java\springBootTest\videos
+2026-11-23 09:31:49  INFO o.s.b.a.web.servlet.WelcomePageHandlerMapping.<init> 59:Adding welcome page: class path resource [static/index.html]
+2026-11-23 09:31:49  INFO o.s.b.d.autoconfigure.OptionalLiveReloadServer.startServer 59:LiveReload server is running on port 35729
+2026-11-23 09:31:49  INFO o.s.boot.web.embedded.tomcat.TomcatWebServer.start 243:Tomcat started on port 8081 (http) with context path '/'
+2026-11-23 09:31:50  INFO c.fenglin.springboottest.SpringBootTestApplication.logStarted 59:Started SpringBootTestApplication in 2.31 seconds (process running for 2.699)
+2026-11-23 09:31:50  INFO c.f.springboottest.config.DataSourceDiagnostics.reportPoolSettings 51:HikariCP 生效参数 -> pool=ReigekiHikariPool, maximumPoolSize=20, minimumIdle=5, connectionTimeout=10000ms, validationTimeout=3000ms, maxLifetime=1800s, idleTimeout=600s, keepaliveTime=300s, leakDetectionThreshold=20000ms
+2026-11-23 09:31:50  INFO com.zaxxer.hikari.HikariDataSource.getConnection 109:ReigekiHikariPool - Starting...
+2026-11-23 09:31:50  INFO com.zaxxer.hikari.pool.HikariPool.checkFailFast 554:ReigekiHikariPool - Added connection com.mysql.cj.jdbc.ConnectionImpl@7c252564
+2026-11-23 09:31:50  INFO com.zaxxer.hikari.HikariDataSource.getConnection 122:ReigekiHikariPool - Start completed.
+2026-11-23 09:31:50  INFO c.f.springboottest.config.DataSourceDiagnostics.probe 77:数据库连接正常 -> MySQL 8.0.39（驱动 MySQL Connector/J mysql-connector-j-9.1.0 (Revision: cf2917ea44ae2e43a4514a33771035aa99de73bf)）, 连接耗时 154ms, URL=jdbc:mysql://localhost:3306/reigeki_anime?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL&autoReconnect=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=250&prepStmtCacheSqlLimit=2048&cacheResultSetMetadata=true&cacheServerConfiguration=true&useLocalSessionState=true&elideSetAutoCommits=true&maintainTimeStats=false&rewriteBatchedStatements=true&tcpKeepAlive=true&connectTimeout=10000&socketTimeout=60000
+2026-11-23 09:31:50  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:==>  Preparing: SELECT COUNT( * ) AS total FROM t_user WHERE (email = ?)
+2026-11-23 09:31:50  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:==> Parameters: reigeki@demo.com(String)
+2026-11-23 09:31:50  INFO o.s.b.a.logging.ConditionEvaluationReportLogger.logMessage 82:
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-11-23 09:31:50  ERROR org.springframework.boot.SpringApplication.reportFailure 858:Application run failed
+org.springframework.jdbc.BadSqlGrammarException: 
+### Error querying database.  Cause: java.sql.SQLSyntaxErrorException: Table 'reigeki_anime.t_user' doesn't exist
+### The error may exist in com/fenglin/springboottest/mapper/UserMapper.java (best guess)
+### The error may involve defaultParameterMap
+### The error occurred while setting parameters
+### SQL: SELECT COUNT( * ) AS total FROM t_user      WHERE  (email = ?)
+### Cause: java.sql.SQLSyntaxErrorException: Table 'reigeki_anime.t_user' doesn't exist
+; bad SQL grammar []
+	at org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator.doTranslate(SQLErrorCodeSQLExceptionTranslator.java:246)
+	at org.springframework.jdbc.support.AbstractFallbackSQLExceptionTranslator.translate(AbstractFallbackSQLExceptionTranslator.java:107)
+	at org.mybatis.spring.MyBatisExceptionTranslator.translateExceptionIfPossible(MyBatisExceptionTranslator.java:92)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:439)
+	at jdk.proxy2/jdk.proxy2.$Proxy76.selectOne(Unknown Source)
+	at org.mybatis.spring.SqlSessionTemplate.selectOne(SqlSessionTemplate.java:160)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperMethod.execute(MybatisMapperMethod.java:87)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy$PlainMethodInvoker.invoke(MybatisMapperProxy.java:152)
+	at com.baomidou.mybatisplus.core.override.MybatisMapperProxy.invoke(MybatisMapperProxy.java:89)
+	at jdk.proxy3/jdk.proxy3.$Proxy83.selectCount(Unknown Source)
+	at com.fenglin.springboottest.config.DataInitializer.seedUser(DataInitializer.java:64)
+	at com.fenglin.springboottest.config.DataInitializer.lambda$initDemoData$0(DataInitializer.java:51)
+	at org.springframework.boot.SpringApplication.lambda$callRunner$4(SpringApplication.java:785)
+	at org.springframework.util.function.ThrowingConsumer$1.acceptWithException(ThrowingConsumer.java:82)
+	at org.springframework.util.function.ThrowingConsumer.accept(ThrowingConsumer.java:60)
+	at org.springframework.util.function.ThrowingConsumer$1.accept(ThrowingConsumer.java:86)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:797)
+	at org.springframework.boot.SpringApplication.callRunner(SpringApplication.java:785)
+	at org.springframework.boot.SpringApplication.lambda$callRunners$3(SpringApplication.java:773)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.base/java.util.stream.SortedOps$SizedRefSortingSink.end(SortedOps.java:357)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:510)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.base/java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.base/java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:596)
+	at org.springframework.boot.SpringApplication.callRunners(SpringApplication.java:773)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:325)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1362)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1351)
+	at com.fenglin.springboottest.SpringBootTestApplication.main(SpringBootTestApplication.java:13)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50)
+Caused by: java.sql.SQLSyntaxErrorException: Table 'reigeki_anime.t_user' doesn't exist
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:112)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:114)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.executeInternal(ClientPreparedStatement.java:988)
+	at com.mysql.cj.jdbc.ClientPreparedStatement.execute(ClientPreparedStatement.java:382)
+	at com.zaxxer.hikari.pool.ProxyPreparedStatement.execute(ProxyPreparedStatement.java:44)
+	at com.zaxxer.hikari.pool.HikariProxyPreparedStatement.execute(HikariProxyPreparedStatement.java)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.apache.ibatis.logging.jdbc.PreparedStatementLogger.invoke(PreparedStatementLogger.java:58)
+	at jdk.proxy4/jdk.proxy4.$Proxy97.execute(Unknown Source)
+	at org.apache.ibatis.executor.statement.PreparedStatementHandler.query(PreparedStatementHandler.java:65)
+	at org.apache.ibatis.executor.statement.RoutingStatementHandler.query(RoutingStatementHandler.java:80)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:61)
+	at jdk.proxy2/jdk.proxy2.$Proxy96.query(Unknown Source)
+	at org.apache.ibatis.executor.SimpleExecutor.doQuery(SimpleExecutor.java:65)
+	at org.apache.ibatis.executor.BaseExecutor.queryFromDatabase(BaseExecutor.java:336)
+	at org.apache.ibatis.executor.BaseExecutor.query(BaseExecutor.java:158)
+	at org.apache.ibatis.executor.CachingExecutor.query(CachingExecutor.java:110)
+	at com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor.intercept(MybatisPlusInterceptor.java:81)
+	at org.apache.ibatis.plugin.Plugin.invoke(Plugin.java:59)
+	at jdk.proxy2/jdk.proxy2.$Proxy95.query(Unknown Source)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:154)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:147)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectList(DefaultSqlSession.java:142)
+	at org.apache.ibatis.session.defaults.DefaultSqlSession.selectOne(DefaultSqlSession.java:75)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.mybatis.spring.SqlSessionTemplate$SqlSessionInterceptor.invoke(SqlSessionTemplate.java:425)
+	... 31 common frames omitted
+2026-11-23 09:31:50  INFO o.s.boot.web.embedded.tomcat.GracefulShutdown.shutDownGracefully 54:Commencing graceful shutdown. Waiting for active requests to complete
+2026-11-23 09:31:50  INFO o.s.boot.web.embedded.tomcat.GracefulShutdown.doShutdown 76:Graceful shutdown complete
+2026-11-23 09:31:50  INFO com.zaxxer.hikari.HikariDataSource.close 349:ReigekiHikariPool - Shutdown initiated...
+2026-11-23 09:31:50  INFO com.zaxxer.hikari.HikariDataSource.close 351:ReigekiHikariPool - Shutdown completed.
+2026-11-23 09:32:39  INFO c.fenglin.springboottest.SpringBootTestApplication.logStarting 53:Starting SpringBootTestApplication using Java 21.0.10 with PID 3444 (D:\workSpace\java\springBootTest\target\classes started by Administrator in D:\workSpace\java\springBootTest)
+2026-11-23 09:32:39  INFO c.fenglin.springboottest.SpringBootTestApplication.logStartupProfileInfo 658:The following 1 profile is active: "dev"
+2026-11-23 09:32:39  INFO o.s.b.d.env.DevToolsPropertyDefaultsPostProcessor.logTo 252:Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-11-23 09:32:39  INFO o.s.b.d.env.DevToolsPropertyDefaultsPostProcessor.logTo 252:For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-11-23 09:32:40  INFO o.s.boot.web.embedded.tomcat.TomcatWebServer.initialize 111:Tomcat initialized with port 8081 (http)
+2026-11-23 09:32:40  INFO org.apache.catalina.core.StandardService.log 168:Starting service [Tomcat]
+2026-11-23 09:32:40  INFO org.apache.catalina.core.StandardEngine.log 168:Starting Servlet engine: [Apache Tomcat/10.1.40]
+2026-11-23 09:32:40  INFO o.a.c.core.ContainerBase.[Tomcat].[localhost].[/].log 168:Initializing Spring embedded WebApplicationContext
+2026-11-23 09:32:40  INFO o.s.b.w.s.c.ServletWebServerApplicationContext.prepareWebApplicationContext 301:Root WebApplicationContext: initialization completed in 1003 ms
+2026-11-23 09:32:40  INFO c.f.springboottest.service.impl.VideoServiceImpl.<init> 59:视频根目录 -> D:\workSpace\java\springBootTest\videos
+2026-11-23 09:32:40  INFO o.s.b.a.web.servlet.WelcomePageHandlerMapping.<init> 59:Adding welcome page: class path resource [static/index.html]
+2026-11-23 09:32:41  INFO o.s.b.d.autoconfigure.OptionalLiveReloadServer.startServer 59:LiveReload server is running on port 35729
+2026-11-23 09:32:41  INFO o.s.boot.web.embedded.tomcat.TomcatWebServer.start 243:Tomcat started on port 8081 (http) with context path '/'
+2026-11-23 09:32:41  INFO c.fenglin.springboottest.SpringBootTestApplication.logStarted 59:Started SpringBootTestApplication in 2.148 seconds (process running for 2.464)
+2026-11-23 09:32:41  INFO c.f.springboottest.config.DataSourceDiagnostics.reportPoolSettings 51:HikariCP 生效参数 -> pool=ReigekiHikariPool, maximumPoolSize=20, minimumIdle=5, connectionTimeout=10000ms, validationTimeout=3000ms, maxLifetime=1800s, idleTimeout=600s, keepaliveTime=300s, leakDetectionThreshold=20000ms
+2026-11-23 09:32:41  INFO com.zaxxer.hikari.HikariDataSource.getConnection 109:ReigekiHikariPool - Starting...
+2026-11-23 09:32:41  INFO com.zaxxer.hikari.pool.HikariPool.checkFailFast 554:ReigekiHikariPool - Added connection com.mysql.cj.jdbc.ConnectionImpl@7a70a1e4
+2026-11-23 09:32:41  INFO com.zaxxer.hikari.HikariDataSource.getConnection 122:ReigekiHikariPool - Start completed.
+2026-11-23 09:32:41  INFO c.f.springboottest.config.DataSourceDiagnostics.probe 77:数据库连接正常 -> MySQL 8.0.39（驱动 MySQL Connector/J mysql-connector-j-9.1.0 (Revision: cf2917ea44ae2e43a4514a33771035aa99de73bf)）, 连接耗时 135ms, URL=jdbc:mysql://localhost:3306/reigeki_anime?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL&autoReconnect=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=250&prepStmtCacheSqlLimit=2048&cacheResultSetMetadata=true&cacheServerConfiguration=true&useLocalSessionState=true&elideSetAutoCommits=true&maintainTimeStats=false&rewriteBatchedStatements=true&tcpKeepAlive=true&connectTimeout=10000&socketTimeout=60000
+2026-11-23 09:32:41  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:==>  Preparing: SELECT COUNT( * ) AS total FROM t_user WHERE (email = ?)
+2026-11-23 09:32:41  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:==> Parameters: reigeki@demo.com(String)
+2026-11-23 09:50:24  INFO c.fenglin.springboottest.SpringBootTestApplication.logStarting 53:Starting SpringBootTestApplication using Java 21.0.10 with PID 13304 (D:\workSpace\java\springBootTest\target\classes started by Administrator in D:\workSpace\java\springBootTest)
+2026-11-23 09:50:24  INFO c.fenglin.springboottest.SpringBootTestApplication.logStartupProfileInfo 658:The following 1 profile is active: "dev"
+2026-11-23 09:50:24  INFO o.s.b.d.env.DevToolsPropertyDefaultsPostProcessor.logTo 252:Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-11-23 09:50:24  INFO o.s.b.d.env.DevToolsPropertyDefaultsPostProcessor.logTo 252:For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-11-23 09:50:25  INFO o.s.boot.web.embedded.tomcat.TomcatWebServer.initialize 111:Tomcat initialized with port 58908 (http)
+2026-11-23 09:50:25  INFO org.apache.catalina.core.StandardService.log 168:Starting service [Tomcat]
+2026-11-23 09:50:25  INFO org.apache.catalina.core.StandardEngine.log 168:Starting Servlet engine: [Apache Tomcat/10.1.40]
+2026-11-23 09:50:25  INFO o.a.c.core.ContainerBase.[Tomcat].[localhost].[/].log 168:Initializing Spring embedded WebApplicationContext
+2026-11-23 09:50:25  INFO o.s.b.w.s.c.ServletWebServerApplicationContext.prepareWebApplicationContext 301:Root WebApplicationContext: initialization completed in 1189 ms
+2026-11-23 09:50:26  INFO c.f.springboottest.service.impl.VideoServiceImpl.<init> 59:视频根目录 -> D:\workSpace\java\springBootTest\videos
+2026-11-23 09:50:26  INFO o.s.b.a.web.servlet.WelcomePageHandlerMapping.<init> 59:Adding welcome page: class path resource [static/index.html]
+2026-11-23 09:50:26  INFO o.s.b.d.autoconfigure.OptionalLiveReloadServer.startServer 59:LiveReload server is running on port 35729
+2026-11-23 09:50:26  WARN o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext.refresh 635:Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-11-23 09:50:26  INFO o.s.b.a.logging.ConditionEvaluationReportLogger.logMessage 82:
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-11-23 09:50:26  ERROR o.s.b.diagnostics.LoggingFailureAnalysisReporter.report 40:
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 58908 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 58908 or configure this application to listen on another port.
+
+2026-11-23 09:50:59  INFO c.fenglin.springboottest.SpringBootTestApplication.logStarting 53:Starting SpringBootTestApplication using Java 21.0.10 with PID 10956 (D:\workSpace\java\springBootTest\target\classes started by Administrator in D:\workSpace\java\springBootTest)
+2026-11-23 09:50:59  INFO c.fenglin.springboottest.SpringBootTestApplication.logStartupProfileInfo 658:The following 1 profile is active: "dev"
+2026-11-23 09:50:59  INFO o.s.b.d.env.DevToolsPropertyDefaultsPostProcessor.logTo 252:For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-11-23 09:51:00  INFO o.s.boot.web.embedded.tomcat.TomcatWebServer.initialize 111:Tomcat initialized with port 8081 (http)
+2026-11-23 09:51:00  INFO org.apache.catalina.core.StandardService.log 168:Starting service [Tomcat]
+2026-11-23 09:51:00  INFO org.apache.catalina.core.StandardEngine.log 168:Starting Servlet engine: [Apache Tomcat/10.1.40]
+2026-11-23 09:51:00  INFO o.a.c.core.ContainerBase.[Tomcat].[localhost].[/].log 168:Initializing Spring embedded WebApplicationContext
+2026-11-23 09:51:00  INFO o.s.b.w.s.c.ServletWebServerApplicationContext.prepareWebApplicationContext 301:Root WebApplicationContext: initialization completed in 947 ms
+2026-11-23 09:51:00  INFO c.f.springboottest.service.impl.VideoServiceImpl.<init> 59:视频根目录 -> D:\workSpace\java\springBootTest\videos
+2026-11-23 09:51:00  INFO o.s.b.a.web.servlet.WelcomePageHandlerMapping.<init> 59:Adding welcome page: class path resource [static/index.html]
+2026-11-23 09:51:01  INFO o.s.boot.web.embedded.tomcat.TomcatWebServer.start 243:Tomcat started on port 8081 (http) with context path '/'
+2026-11-23 09:51:01  INFO c.fenglin.springboottest.SpringBootTestApplication.logStarted 59:Started SpringBootTestApplication in 2.065 seconds (process running for 2.359)
+2026-11-23 09:51:01  INFO c.f.springboottest.config.DataSourceDiagnostics.reportPoolSettings 51:HikariCP 生效参数 -> pool=ReigekiHikariPool, maximumPoolSize=20, minimumIdle=5, connectionTimeout=10000ms, validationTimeout=3000ms, maxLifetime=1800s, idleTimeout=600s, keepaliveTime=300s, leakDetectionThreshold=20000ms
+2026-11-23 09:51:01  INFO com.zaxxer.hikari.HikariDataSource.getConnection 109:ReigekiHikariPool - Starting...
+2026-11-23 09:51:01  INFO com.zaxxer.hikari.pool.HikariPool.checkFailFast 554:ReigekiHikariPool - Added connection com.mysql.cj.jdbc.ConnectionImpl@6fb0261e
+2026-11-23 09:51:01  INFO com.zaxxer.hikari.HikariDataSource.getConnection 122:ReigekiHikariPool - Start completed.
+2026-11-23 09:51:01  INFO c.f.springboottest.config.DataSourceDiagnostics.probe 77:数据库连接正常 -> MySQL 8.0.39（驱动 MySQL Connector/J mysql-connector-j-9.1.0 (Revision: cf2917ea44ae2e43a4514a33771035aa99de73bf)）, 连接耗时 148ms, URL=jdbc:mysql://localhost:3306/reigeki_anime?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL&autoReconnect=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=250&prepStmtCacheSqlLimit=2048&cacheResultSetMetadata=true&cacheServerConfiguration=true&useLocalSessionState=true&elideSetAutoCommits=true&maintainTimeStats=false&rewriteBatchedStatements=true&tcpKeepAlive=true&connectTimeout=10000&socketTimeout=60000
+2026-11-23 09:51:01  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:==>  Preparing: SELECT COUNT( * ) AS total FROM t_user WHERE (email = ?)
+2026-11-23 09:51:01  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:==> Parameters: reigeki@demo.com(String)
+2026-11-23 09:51:01  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:<==      Total: 1
+2026-11-23 09:51:01  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:==>  Preparing: SELECT COUNT( * ) AS total FROM t_user WHERE (email = ?)
+2026-11-23 09:51:01  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:==> Parameters: admin@demo.com(String)
+2026-11-23 09:51:01  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:<==      Total: 1
+2026-11-23 09:51:01  DEBUG c.f.s.mapper.AdminAccountMapper.selectCount.debug 135:==>  Preparing: SELECT COUNT( * ) AS total FROM admin_account WHERE (username = ?)
+2026-11-23 09:51:01  DEBUG c.f.s.mapper.AdminAccountMapper.selectCount.debug 135:==> Parameters: admin(String)
+2026-11-23 09:51:01  DEBUG c.f.s.mapper.AdminAccountMapper.selectCount.debug 135:<==      Total: 1
+2026-11-23 09:51:01  DEBUG c.f.springboottest.mapper.AnimeMapper.selectCount.debug 135:==>  Preparing: SELECT COUNT( * ) AS total FROM anime
+2026-11-23 09:51:01  DEBUG c.f.springboottest.mapper.AnimeMapper.selectCount.debug 135:==> Parameters: 
+2026-11-23 09:51:01  DEBUG c.f.springboottest.mapper.AnimeMapper.selectCount.debug 135:<==      Total: 1
+2026-11-23 09:51:01  DEBUG c.f.springboottest.mapper.AnimeMapper.selectList.debug 135:==>  Preparing: SELECT id,title,description,tag,rating,episode,cover,sort,visible,create_time,update_time FROM anime WHERE (title = ?) LIMIT 1
+2026-11-23 09:51:01  DEBUG c.f.springboottest.mapper.AnimeMapper.selectList.debug 135:==> Parameters: 碧海之章(String)
+2026-11-23 09:51:01  DEBUG c.f.springboottest.mapper.AnimeMapper.selectList.debug 135:<==      Total: 1
+2026-11-23 09:51:01  DEBUG c.f.s.mapper.AnimeEpisodeMapper.selectCount.debug 135:==>  Preparing: SELECT COUNT( * ) AS total FROM anime_episode WHERE (anime_id = ?)
+2026-11-23 09:51:01  DEBUG c.f.s.mapper.AnimeEpisodeMapper.selectCount.debug 135:==> Parameters: 1(Long)
+2026-11-23 09:51:01  DEBUG c.f.s.mapper.AnimeEpisodeMapper.selectCount.debug 135:<==      Total: 1
+2026-11-23 09:51:22  INFO o.a.c.core.ContainerBase.[Tomcat].[localhost].[/].log 168:Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-23 09:51:22  INFO org.springframework.web.servlet.DispatcherServlet.initServletBean 532:Initializing Servlet 'dispatcherServlet'
+2026-11-23 09:51:22  INFO org.springframework.web.servlet.DispatcherServlet.initServletBean 554:Completed initialization in 1 ms
+2026-11-23 09:51:22  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:==>  Preparing: SELECT COUNT( * ) AS total FROM t_user WHERE (email = ?)
+2026-11-23 09:51:22  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:==> Parameters: testuserst9xe7(String)
+2026-11-23 09:51:22  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:<==      Total: 1
+2026-11-23 09:51:22  DEBUG c.fenglin.springboottest.mapper.UserMapper.insert.debug 135:==>  Preparing: INSERT INTO t_user ( nickname, email, password, create_time ) VALUES ( ?, ?, ?, ? )
+2026-11-23 09:51:22  DEBUG c.fenglin.springboottest.mapper.UserMapper.insert.debug 135:==> Parameters: testuserst9xe7(String), testuserst9xe7(String), $2a$10$/rS85o96YWSsMoio8qLuUOf2wq2PNa6rsfUnJGcziBUm7tZ6VGlZy(String), 2026-11-23T09:51:22.527056(LocalDateTime)
+2026-11-23 09:51:22  DEBUG c.fenglin.springboottest.mapper.UserMapper.insert.debug 135:<==    Updates: 1
+2026-11-23 09:51:22  INFO c.f.springboottest.service.impl.AuthServiceImpl.register 80:新社员注册成功 -> id=4, account=testuserst9xe7
+2026-11-23 09:51:22  DEBUG c.f.springboottest.mapper.UserMapper.selectList.debug 135:==>  Preparing: SELECT id,nickname,email,password,create_time FROM t_user WHERE (email = ?)
+2026-11-23 09:51:22  DEBUG c.f.springboottest.mapper.UserMapper.selectList.debug 135:==> Parameters: testuserst9xe7(String)
+2026-11-23 09:51:22  DEBUG c.f.springboottest.mapper.UserMapper.selectList.debug 135:<==      Total: 1
+2026-11-23 09:51:22  INFO c.f.springboottest.service.impl.AuthServiceImpl.login 102:社员登录成功 -> id=4, email=testuserst9xe7, rememberMe=false
+2026-11-23 09:51:22  DEBUG c.f.springboottest.mapper.UserMapper.selectById.debug 135:==>  Preparing: SELECT id,nickname,email,password,create_time FROM t_user WHERE id=?
+2026-11-23 09:51:22  DEBUG c.f.springboottest.mapper.UserMapper.selectById.debug 135:==> Parameters: 4(Long)
+2026-11-23 09:51:22  DEBUG c.f.springboottest.mapper.UserMapper.selectById.debug 135:<==      Total: 1
+2026-11-23 09:51:22  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:==>  Preparing: SELECT COUNT( * ) AS total FROM t_user WHERE (email = ?)
+2026-11-23 09:51:22  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:==> Parameters: testuserst9xe7(String)
+2026-11-23 09:51:22  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:<==      Total: 1
+2026-11-23 09:51:22  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=400, message=该昵称已被注册，请换一个
+2026-11-23 09:51:22  DEBUG c.f.springboottest.mapper.UserMapper.selectList.debug 135:==>  Preparing: SELECT id,nickname,email,password,create_time FROM t_user WHERE (email = ?)
+2026-11-23 09:51:22  DEBUG c.f.springboottest.mapper.UserMapper.selectList.debug 135:==> Parameters: testuserst9xe7(String)
+2026-11-23 09:51:22  DEBUG c.f.springboottest.mapper.UserMapper.selectList.debug 135:<==      Total: 1
+2026-11-23 09:51:22  WARN c.f.springboottest.common.GlobalExceptionHandler.handleBizException 22:业务异常: code=401, message=账号或密码错误
+2026-11-23 09:51:22  DEBUG c.f.springboottest.mapper.UserMapper.selectList.debug 135:==>  Preparing: SELECT id,nickname,email,password,create_time FROM t_user WHERE (email = ?)
+2026-11-23 09:51:22  DEBUG c.f.springboottest.mapper.UserMapper.selectList.debug 135:==> Parameters: reigeki@demo.com(String)
+2026-11-23 09:51:22  DEBUG c.f.springboottest.mapper.UserMapper.selectList.debug 135:<==      Total: 1
+2026-11-23 09:51:22  INFO c.f.springboottest.service.impl.AuthServiceImpl.login 102:社员登录成功 -> id=1, email=reigeki@demo.com, rememberMe=false
+2026-11-23 09:55:03  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:==>  Preparing: SELECT COUNT( * ) AS total FROM t_user WHERE (email = ?)
+2026-11-23 09:55:03  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:==> Parameters: 王星(String)
+2026-11-23 09:55:03  DEBUG c.f.springboottest.mapper.UserMapper.selectCount.debug 135:<==      Total: 1
+2026-11-23 09:55:03  DEBUG c.fenglin.springboottest.mapper.UserMapper.insert.debug 135:==>  Preparing: INSERT INTO t_user ( nickname, email, password, create_time ) VALUES ( ?, ?, ?, ? )
+2026-11-23 09:55:03  DEBUG c.fenglin.springboottest.mapper.UserMapper.insert.debug 135:==> Parameters: 王星(String), 王星(String), $2a$10$CHGNrazRXLvGyxn2UYc.3OhJ7W2.dRtatpxmK7zKSeos73HttVBBG(String), 2026-11-23T09:55:03.413006(LocalDateTime)
+2026-11-23 09:55:03  DEBUG c.fenglin.springboottest.mapper.UserMapper.insert.debug 135:<==    Updates: 1
+2026-11-23 09:55:03  INFO c.f.springboottest.service.impl.AuthServiceImpl.register 80:新社员注册成功 -> id=5, account=王星
+2026-11-23 09:55:09  DEBUG c.f.springboottest.mapper.UserMapper.selectList.debug 135:==>  Preparing: SELECT id,nickname,email,password,create_time FROM t_user WHERE (email = ?)
+2026-11-23 09:55:09  DEBUG c.f.springboottest.mapper.UserMapper.selectList.debug 135:==> Parameters: 王星(String)
+2026-11-23 09:55:09  DEBUG c.f.springboottest.mapper.UserMapper.selectList.debug 135:<==      Total: 1
+2026-11-23 09:55:09  INFO c.f.springboottest.service.impl.AuthServiceImpl.login 102:社员登录成功 -> id=5, email=王星, rememberMe=false
+2026-11-23 09:55:09  DEBUG c.f.springboottest.mapper.UserMapper.selectById.debug 135:==>  Preparing: SELECT id,nickname,email,password,create_time FROM t_user WHERE id=?
+2026-11-23 09:55:09  DEBUG c.f.springboottest.mapper.UserMapper.selectById.debug 135:==> Parameters: 5(Long)
+2026-11-23 09:55:09  DEBUG c.f.springboottest.mapper.UserMapper.selectById.debug 135:<==      Total: 1

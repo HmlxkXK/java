@@ -1,32 +1,26 @@
 package com.fenglin.springboottest.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 /**
  * 注册请求体，对应前端 {@code POST /api/auth/register} 的 JSON body：
- * <pre>{"nickname":"...","email":"...","password":"...","code":"123456"}</pre>
+ * <pre>{"nickname":"...","password":"..."}</pre>
+ * <p>注册不再需要邮箱：昵称即登录账号（须唯一）。图片验证码由前端 canvas
+ * 生成并校验，后端不接收验证码字段。
  */
 public class RegisterRequest {
 
+    /** 昵称同时作为登录账号，需唯一 */
     @NotBlank(message = "请填写昵称")
-    @Size(max = 50, message = "昵称最长 50 个字符")
+    @Size(min = 2, max = 50, message = "昵称长度需在 2-50 个字符之间")
+    @Pattern(regexp = "^[\\w\\u4e00-\\u9fa5-]+$", message = "昵称只能包含字母、数字、下划线、中文和连字符")
     private String nickname;
-
-    @NotBlank(message = "请填写邮箱")
-    @Email(message = "邮箱格式不正确")
-    @Size(max = 100, message = "邮箱最长 100 个字符")
-    private String email;
 
     @NotBlank(message = "请填写密码")
     @Size(min = 8, max = 64, message = "密码长度需在 8-64 位之间")
     private String password;
-
-    @NotBlank(message = "请填写邮箱验证码")
-    @Pattern(regexp = "^\\d{6}$", message = "验证码为 6 位数字")
-    private String code;
 
     public String getNickname() {
         return nickname;
@@ -36,27 +30,11 @@ public class RegisterRequest {
         this.nickname = nickname;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 }

@@ -121,8 +121,8 @@ const showPassword = ref(false)
 const loading = ref(false)
 
 onMounted(() => {
-  // 回填上次「记住我」的账号；注册页跳过来时会带 ?email=
-  const fromRegister = route.query.email
+  // 回填上次「记住我」的账号；注册页跳过来时会带 ?account= 或旧的 ?email=
+  const fromRegister = route.query.account || route.query.email
   if (typeof fromRegister === 'string' && fromRegister) {
     form.account = fromRegister
     return
@@ -193,3 +193,10 @@ function onUnavailable(name) {
   toast.info(`${name}尚未接入后端`)
 }
 </script>
+
+<style scoped>
+/* 只让登录卡片顶部的 Logo 居中，注册页沿用 global.css 的左对齐样式 */
+.card > .logo {
+  justify-content: center;
+}
+</style>
