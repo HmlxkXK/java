@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fenglin.springboottest.common.BizException;
 import com.fenglin.springboottest.common.Result;
 import com.fenglin.springboottest.dto.LoginRequest;
+import com.fenglin.springboottest.dto.ProfileRequest;
 import com.fenglin.springboottest.dto.RegisterRequest;
 import com.fenglin.springboottest.entity.User;
 import com.fenglin.springboottest.mapper.UserMapper;
@@ -137,11 +138,8 @@ public class AuthServiceImpl implements AuthService {
         // 改昵称：昵称即登录账号（存于 email 列），需校验唯一
         if (wantNickname) {
             String account = normalize(newNickname);
-            Long owner = userMapper.selectOne(new LambdaQueryWrapper<User>()
-                            .eq(User::getEmail, account))
-                    == null ? null : userMapper.selectOne(new LambdaQueryWrapper<User>()
-                            .eq(User::getEmail, account)).getId();
-            if (owner != null && !owner.equals(userId)) {
+            User existing = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getEmail, account));
+            if (existing != null && !existing.getId().equals(userId)) {
                 throw new BizException("该昵称已被注册，请换一个");
             }
             user.setNickname(newNickname.trim());
