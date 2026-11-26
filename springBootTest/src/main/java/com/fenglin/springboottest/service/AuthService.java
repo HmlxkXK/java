@@ -1,6 +1,7 @@
 package com.fenglin.springboottest.service;
 
 import com.fenglin.springboottest.dto.LoginRequest;
+import com.fenglin.springboottest.dto.ProfileRequest;
 import com.fenglin.springboottest.dto.RegisterRequest;
 import com.fenglin.springboottest.vo.LoginVO;
 import com.fenglin.springboottest.vo.UserVO;
@@ -25,4 +26,7 @@ public interface AuthService {
 
     /** 根据 token 获取当前登录用户 */
     UserVO currentUser(String token);
+
+    /** 修改资料：昵称 / 密码（字段可选） */
+    UserVO updateProfile(Long userId, ProfileRequest request);
 }

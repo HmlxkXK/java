@@ -1,5 +1,5 @@
 <template>
-  <EmberBackground />
+  <EmberBackground v-if="!isHome" />
   <AppTopbar v-if="!isAuthRoute && !isAdminRoute" />
   <router-view />
   <ToastHost />
@@ -14,7 +14,7 @@
  * 所以这两页单独隐藏顶栏。
  */
 
-import { computed } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import EmberBackground from './components/EmberBackground.vue'
 import AppTopbar from './components/AppTopbar.vue'
@@ -25,4 +25,10 @@ const route = useRoute()
 const isAuthRoute = computed(() => route.name === 'login' || route.name === 'register')
 // 后台管理区有自己的侧边栏布局，不渲染前台社员顶栏
 const isAdminRoute = computed(() => route.path.startsWith('/admin'))
+// 首页是浅色的 B 站风格，需要把全局深色背景换成白底
+const isHome = computed(() => route.name === 'home')
+
+watchEffect(() => {
+  document.body.classList.toggle('bili-home', isHome.value)
+})
 </script>

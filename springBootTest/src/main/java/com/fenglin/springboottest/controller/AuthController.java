@@ -1,7 +1,9 @@
 package com.fenglin.springboottest.controller;
 
+import com.fenglin.springboottest.common.BizException;
 import com.fenglin.springboottest.common.Result;
 import com.fenglin.springboottest.dto.LoginRequest;
+import com.fenglin.springboottest.dto.ProfileRequest;
 import com.fenglin.springboottest.dto.RegisterRequest;
 import com.fenglin.springboottest.service.AuthService;
 import com.fenglin.springboottest.util.JwtUtil;
@@ -10,6 +12,7 @@ import com.fenglin.springboottest.vo.UserVO;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
  *   <li>POST /api/auth/register               注册</li>
  *   <li>POST /api/auth/login                  登录</li>
  *   <li>GET  /api/auth/me                     查询当前登录用户</li>
+ *   <li>PUT  /api/auth/profile                修改昵称 / 密码</li>
  * </ul>
  */
 @RestController
@@ -64,5 +68,18 @@ public class AuthController {
     public Result<UserVO> me(@RequestHeader(value = "Authorization", required = false) String authorization) {
         UserVO user = authService.currentUser(jwtUtil.resolveToken(authorization));
         return Result.ok(user);
+    }
+
+    /** 修改资料（昵称 / 密码），需要带 Authorization: Bearer &lt;token&gt; */
+    @PutMapping("/profile")
+    public Result<UserVO> updateProfile(
+            @RequestHeader(value = "Authorization", required = false) String authorization,
+            @Valid @RequestBody ProfileRequest request) {
+        Long userId = jwtUtil.parseUserId(jwtUtil.resolveToken(authorization));
+        if (userId == null) {
+            throw new BizException(Result.CODE_UNAUTHORIZED, "登录已过期，请重新登录");
+        }
+        UserVO user = authService.updateProfile(userId, request);
+        return Result.ok("资料已更新", user);
     }
 }

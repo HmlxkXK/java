@@ -1,269 +1,248 @@
 <template>
-  <div class="landing">
-    <!-- ===== Hero ===== -->
-    <section class="hero">
-      <div class="hero-glow" aria-hidden="true"></div>
-      <div class="hero-inner">
-        <span class="badge" v-reveal>ANIME · 热血 · 二次元</span>
-        <h1 class="hero-title" v-reveal="{ delay: 80 }">
-          燃尽<span>动漫</span>
-          <small>把你的热爱，烧到最旺</small>
-        </h1>
-        <p class="hero-sub" v-reveal="{ delay: 160 }">
-          追番、社区、同好公会，一个都不少。和 86 万社员一起，把每一次心动都变成连载。
-        </p>
-
-        <div class="hero-cta" v-reveal="{ delay: 240 }">
-          <template v-if="isAuthenticated">
-            <router-link class="btn btn-solid" to="/dashboard">进入社员中心 →</router-link>
-          </template>
-          <template v-else>
-            <router-link class="btn btn-solid" to="/register">立即加入 →</router-link>
-            <router-link class="btn btn-ghost" to="/login">我已注册，去登录</router-link>
-          </template>
-        </div>
-
-        <ul class="hero-stats" v-reveal="{ delay: 320 }">
-          <li v-for="s in stats" :key="s.label">
-            <b class="count" :data-target="s.target" :data-suffix="s.suffix || ''">{{ s.prefix || '' }}0{{ s.suffix || '' }}</b>
-            <span>{{ s.label }}</span>
-          </li>
-        </ul>
-      </div>
-
-      <!-- 蔚蓝主题动漫人物立绘（AI 生成，已抠透明底） -->
-      <img class="hero-char" src="/azure-girl.png" alt="蔚蓝色动漫人物立绘" />
-
-      <!-- 漂浮的番剧卡，纯装饰 -->
-      <div class="float-cards" aria-hidden="true">
-        <span
-          v-for="(c, i) in floatCards"
-          :key="i"
-          class="float-card floaty"
-          :style="{ background: c.bg, left: c.left + '%', top: c.top + '%', animationDelay: c.delay + 's' }"
-        >{{ c.text }}</span>
-      </div>
-
-      <!-- Hero 文案与立绘之间空白处的「动漫合集」竖排栏（超宽屏才显示） -->
-      <aside class="side-collections" aria-label="动漫合集">
-        <header
-          class="sc-head fold-head"
-          role="button"
-          tabindex="0"
-          :aria-expanded="collectionsOpen"
-          @click="collectionsOpen = !collectionsOpen"
-          @keydown.enter.prevent="collectionsOpen = !collectionsOpen"
-          @keydown.space.prevent="collectionsOpen = !collectionsOpen"
+  <div class="bili-page">
+    <!-- ===== 分区入口：两行圆形图标 ===== -->
+    <section class="channel-section" aria-label="分区导航">
+      <div class="channel-grid">
+        <router-link
+          v-for="(c, i) in channels"
+          :key="c.name"
+          :to="c.to"
+          class="channel"
+          v-reveal="{ delay: i * 25 }"
         >
-          <h3>📚 动漫合集</h3>
-          <span>本周精选 <i class="fold-caret" :class="{ open: collectionsOpen }" aria-hidden="true">▾</i></span>
-        </header>
-        <Transition name="fold">
-          <ul v-show="collectionsOpen" class="sc-list">
-            <li v-for="c in collections" :key="c.name" class="sc-item" :style="{ '--c': c.color }">
-              <span class="sc-ic" aria-hidden="true">{{ c.icon }}</span>
-              <div class="sc-txt">
-                <b>{{ c.name }}</b>
-                <span>{{ c.count }} 部 · 持续更新</span>
-              </div>
-            </li>
-          </ul>
-        </Transition>
-      </aside>
+          <span class="channel-ic" :style="{ background: c.bg }" aria-hidden="true">{{ c.icon }}</span>
+          <span>{{ c.name }}</span>
+        </router-link>
+      </div>
     </section>
 
-    <!-- ===== 热门番剧 ===== -->
-    <section class="section">
-      <header class="section-head" v-reveal>
-        <h2>本周热门番剧</h2>
-        <p>数据来自后端 <code>GET /api/animes</code>，内容可在右上角「后台管理」中维护。</p>
-      </header>
-
-      <!-- 加载中：占位骨架 -->
-      <div v-if="animesLoading" class="anime-grid" aria-hidden="true">
-        <div v-for="i in 6" :key="i" class="anime-card anime-skeleton">
-          <div class="anime-cover"><span class="skeleton-block sk-cover"></span></div>
-          <div class="anime-body">
-            <span class="skeleton-block" style="display:block;height:18px;width:60%;margin-bottom:8px"></span>
-            <span class="skeleton-block" style="display:block;height:13px;width:90%;margin-bottom:6px"></span>
-            <span class="skeleton-block" style="display:block;height:13px;width:40%"></span>
+    <!-- ===== 主内容：左侧轮播 + 右侧视频网格 ===== -->
+    <main class="main-wrap">
+      <div class="primary-layout">
+        <!-- 左侧大轮播 -->
+        <div class="carousel" aria-label="推荐轮播">
+          <div
+            v-for="(s, i) in slides"
+            :key="s.title"
+            class="slide"
+            :class="{ active: i === slideIndex }"
+            :style="{ backgroundImage: `url(${s.image})` }"
+          >
+            <div class="slide-shade"></div>
+            <div class="slide-caption">
+              <span class="slide-badge">{{ s.badge }}</span>
+              <h2>{{ s.title }}</h2>
+              <p>{{ s.subtitle }}</p>
+            </div>
+          </div>
+          <button type="button" class="carousel-nav prev" @click="prevSlide" aria-label="上一张">‹</button>
+          <button type="button" class="carousel-nav next" @click="nextSlide" aria-label="下一张">›</button>
+          <div class="carousel-dots">
+            <button
+              v-for="(s, i) in slides"
+              :key="i"
+              type="button"
+              :class="{ on: i === slideIndex }"
+              @click="slideIndex = i"
+              :aria-label="`第 ${i + 1} 张`"
+            ></button>
           </div>
         </div>
-      </div>
 
-      <!-- 加载失败 -->
-      <div v-else-if="animesError" class="anime-fallback" role="alert">
-        <p>番剧数据加载失败：{{ animesError }}</p>
-        <button type="button" class="mini-btn" @click="loadAnimes">重试</button>
-      </div>
+        <!-- 右侧视频卡片 -->
+        <div class="video-grid" id="animes">
+          <template v-if="animesLoading">
+            <div v-for="i in 6" :key="i" class="video-card anime-skeleton">
+              <span class="skeleton-block sk-cover"></span>
+              <span class="skeleton-block" style="height: 16px; width: 88%; margin: 9px 0 6px"></span>
+              <span class="skeleton-block" style="height: 12px; width: 55%"></span>
+            </div>
+          </template>
 
-      <!-- 空状态 -->
-      <div v-else-if="!animes.length" class="anime-fallback">
-        <p>管理员还没有上架任何番剧，去后台添加后这里就会热闹起来。</p>
-        <router-link class="mini-btn" to="/admin/login">进入后台管理 →</router-link>
-      </div>
-
-      <div v-else class="anime-grid">
-        <article
-          v-for="(a, i) in animes"
-          :key="a.id"
-          class="anime-card"
-          v-reveal="{ delay: i * 70 }"
-        >
-          <div class="anime-cover" :style="{ background: a.cover || fallbackCover(a) }">
-            <span class="anime-rating">★ {{ a.rating || '—' }}</span>
-            <span class="anime-tag">{{ a.tag || '番剧' }}</span>
+          <div v-else-if="animesError" class="video-fallback" role="alert">
+            <p>番剧加载失败：{{ animesError }}</p>
+            <button type="button" class="retry-btn" @click="loadAnimes">重试</button>
           </div>
-          <div class="anime-body">
-            <h3>{{ a.title }}</h3>
-            <p>{{ a.description }}</p>
-            <div class="anime-meta">
-              <span v-if="a.episode != null">更新至 {{ a.episode }} 话</span>
-              <span v-else>连载中</span>
-              <div class="anime-actions">
-                <router-link class="mini-btn play-btn" :to="`/watch/${a.id}`">▶ 播放</router-link>
-                <button type="button" class="mini-btn" @click="onFollow(a)">{{ a.followed ? '已追' : '+ 追番' }}</button>
+
+          <template v-else>
+            <article
+              v-for="(v, i) in visibleAnimes"
+              :key="v.id"
+              class="video-card"
+              v-reveal="{ delay: i * 45 }"
+            >
+              <router-link class="video-cover" :to="`/watch/${v.id}`">
+                <img :src="v.image" :alt="v.title" loading="lazy" />
+                <span class="video-stats">
+                  <span>▶ {{ v.views }}</span>
+                  <span>💬 {{ v.danmaku }}</span>
+                </span>
+                <span class="video-duration">{{ v.duration }}</span>
+              </router-link>
+              <div class="video-info">
+                <h3 :title="v.title">{{ v.title }}</h3>
+                <div class="video-meta">
+                  <span class="up">📺 {{ v.up }}</span>
+                  <span>{{ v.time }}</span>
+                </div>
               </div>
+            </article>
+          </template>
+        </div>
+      </div>
+    </main>
+
+    <!-- ===== 换一换 / 更多推荐 ===== -->
+    <section class="more-section">
+      <div class="section-bar">
+        <h2>为你推荐</h2>
+        <button type="button" class="refresh-btn" @click="refreshAnimes">🔄 换一换</button>
+      </div>
+      <div class="video-grid video-grid--wide" v-reveal>
+        <article v-for="(v, i) in moreAnimes" :key="`m-${v.id}`" class="video-card">
+          <router-link class="video-cover" :to="`/watch/${v.id}`">
+            <img :src="v.image" :alt="v.title" loading="lazy" />
+            <span class="video-stats">
+              <span>▶ {{ v.views }}</span>
+              <span>💬 {{ v.danmaku }}</span>
+            </span>
+            <span class="video-duration">{{ v.duration }}</span>
+          </router-link>
+          <div class="video-info">
+            <h3 :title="v.title">{{ v.title }}</h3>
+            <div class="video-meta">
+              <span class="up">📺 {{ v.up }}</span>
+              <span>{{ v.time }}</span>
             </div>
           </div>
         </article>
       </div>
     </section>
 
-    <!-- ===== 模块能力 ===== -->
-    <section class="section">
-      <header class="section-head" v-reveal>
-        <h2>一个账号，打通全部热爱</h2>
-        <p>登录后即可使用以下模块，进度多端同步。</p>
-      </header>
-
-      <div class="modules">
-        <router-link
-          v-for="(m, i) in modules"
-          :key="m.title"
-          class="module"
-          :to="isAuthenticated ? '/dashboard' : '/register'"
-          v-reveal="{ delay: i * 90 }"
-        >
-          <span class="module-ic" :style="{ background: m.bg }" aria-hidden="true">{{ m.icon }}</span>
-          <b>{{ m.title }}</b>
-          <span class="module-desc">{{ m.desc }}</span>
-          <span class="module-go">了解详情 →</span>
-        </router-link>
-      </div>
-    </section>
-
-    <!-- ===== 动漫视频直达 ===== -->
-    <section class="section">
-      <header class="section-head" v-reveal>
-        <h2>动漫视频直达</h2>
-        <p>点一下就到热门平台看番，全部在新标签页打开，不影响这里继续逛。</p>
-      </header>
-
-      <div class="video-links">
-        <a
-          v-for="(v, i) in videoLinks"
-          :key="v.name"
-          class="video-link"
-          :href="v.url"
-          target="_blank"
-          rel="noopener noreferrer"
-          v-reveal="{ delay: i * 70 }"
-        >
-          <span class="vl-ic" :style="{ background: v.bg }" aria-hidden="true">{{ v.icon }}</span>
-          <b>{{ v.name }}</b>
-          <span class="vl-desc">{{ v.desc }}</span>
-          <span class="vl-go">去追番 ↗</span>
-        </a>
-      </div>
-    </section>
-
-    <!-- ===== CTA 条 ===== -->
-    <section class="cta-band" v-reveal>
-      <div class="cta-inner">
-        <h2>现在加入，领取新社员专属礼包</h2>
-        <p>30 天会员体验 · 同步追番进度 · 账号加密保护</p>
-        <router-link class="btn btn-solid" to="/register">免费创建账号 →</router-link>
-      </div>
-    </section>
-
-    <!-- 标签滚动墙 -->
-    <div class="marquee" aria-hidden="true">
-      <div class="marquee-track">
-        <span v-for="(t, i) in [...tags, ...tags]" :key="i" class="tag-chip">{{ t }}</span>
-      </div>
-    </div>
-
-    <footer class="landing-footer">
-      <span class="mark">🌊</span>
-      <span>燃尽动漫 · 一个演示用的二次元社区</span>
+    <footer class="bili-footer">
+      <span>🔥 燃尽动漫</span>
+      <span>一个演示用的二次元社区 · 数据来自本地后端</span>
     </footer>
   </div>
 </template>
 
 <script setup>
 /**
- * 站点主页（落地页）。
+ * 公开首页（B 站风格）。
  *
- * 这是「公开页」：任何人无需登录就能看，承担「展示 + 转化（引导注册）」的职责，
- * 与登录后才能进的「社员中心 /dashboard」分工不同。
- *
- * 动效策略：
- *   - 全程用 v-reveal 指令做滚动渐入，配合 global.css 的 .reveal 过渡，零额外依赖；
- *   - Hero 数字用 IntersectionObserver 触发「从 0 滚到目标值」，只播一次；
- *   - 漂浮番剧卡、标签墙用纯 CSS keyframes，尊重 prefers-reduced-motion。
+ * 布局对应设计稿：分区入口 → 左侧轮播 + 右侧视频网格 → 为你推荐。
+ * 番剧标题 / 标签来自后端 GET /api/animes；封面用本地生成的图片，
+ * 播放量、弹幕、UP 主等为演示性展示数据（后端暂无这些字段）。
  */
-
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
-import { useAuth } from '../composables/useAuth.js'
-import { animeCollections } from '../data/collections.js'
+import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { fetchPublicAnimes } from '../api/anime.js'
 
-const { isAuthenticated } = useAuth()
+const route = useRoute()
 
-// Hero 侧栏只展示前 6 个合集，保持紧凑
-const collections = animeCollections.slice(0, 6)
+const slides = [
+  { title: '碧海之章', subtitle: '少年与深海共生，在潮汐尽头点亮最后的光', badge: '独家 · 热血', image: '/images/carousel-hero.png' },
+  { title: '樱落之时', subtitle: '转学少女与一段被遗忘的约定', badge: '治愈 · 新番', image: '/images/cover-samurai.png' },
+  { title: '星轨彼岸', subtitle: '跨越光年的通讯，连接两个文明的少年', badge: '科幻 · 推荐', image: '/images/cover-astronaut.png' }
+]
+const slideIndex = ref(0)
+let slideTimer = null
+function nextSlide() { slideIndex.value = (slideIndex.value + 1) % slides.length }
+function prevSlide() { slideIndex.value = (slideIndex.value - 1 + slides.length) % slides.length }
+onMounted(() => { slideTimer = setInterval(nextSlide, 5000) })
+onUnmounted(() => clearInterval(slideTimer))
 
-// 「动漫合集 / 本周精选」折叠状态，默认展开
-const collectionsOpen = ref(true)
-
-const stats = [
-  { target: 3200, suffix: '+', label: '连载番剧' },
-  { target: 86, suffix: '万', label: '活跃社员' },
-  { target: 24, suffix: 'h', label: '不打烊' }
+const channels = [
+  { name: '动态', icon: '🌊', bg: 'linear-gradient(135deg,#ffb64d,#ff8a3d)', to: '/dashboard' },
+  { name: '热门', icon: '🔥', bg: 'linear-gradient(135deg,#ff6a6a,#f2355b)', to: '/dashboard' },
+  { name: '番剧', icon: '📺', bg: 'linear-gradient(135deg,#7ec8ff,#3b9dff)', to: '/dashboard' },
+  { name: '国创', icon: '🐉', bg: 'linear-gradient(135deg,#9ad9ff,#4aa3ff)', to: '/dashboard' },
+  { name: '综艺', icon: '🎤', bg: 'linear-gradient(135deg,#ffd166,#ff9f43)', to: '/dashboard' },
+  { name: '动画', icon: '✨', bg: 'linear-gradient(135deg,#c8a2ff,#8f6dff)', to: '/dashboard' },
+  { name: '鬼畜', icon: '😜', bg: 'linear-gradient(135deg,#a0e8ff,#4fc3f7)', to: '/dashboard' },
+  { name: '舞蹈', icon: '💃', bg: 'linear-gradient(135deg,#ffb3d1,#ff6fa5)', to: '/dashboard' },
+  { name: '娱乐', icon: '🎪', bg: 'linear-gradient(135deg,#ffcf8b,#ff9d5c)', to: '/dashboard' },
+  { name: '科技数码', icon: '💻', bg: 'linear-gradient(135deg,#a8c7fa,#6f9dff)', to: '/dashboard' },
+  { name: '美食', icon: '🍜', bg: 'linear-gradient(135deg,#ffcf9e,#ff9f68)', to: '/dashboard' },
+  { name: '汽车', icon: '🚗', bg: 'linear-gradient(135deg,#b7d3ff,#7aa8ff)', to: '/dashboard' },
+  { name: '游戏', icon: '🎮', bg: 'linear-gradient(135deg,#c4b5fd,#8b7cf6)', to: '/dashboard' },
+  { name: '音乐', icon: '🎵', bg: 'linear-gradient(135deg,#ffb3c6,#ff7096)', to: '/dashboard' },
+  { name: '影视', icon: '🎬', bg: 'linear-gradient(135deg,#9fb8ff,#6a86ff)', to: '/dashboard' },
+  { name: '知识', icon: '📚', bg: 'linear-gradient(135deg,#8fd6c4,#4fbfa2)', to: '/dashboard' },
+  { name: '资讯', icon: '📰', bg: 'linear-gradient(135deg,#b0bec5,#78909c)', to: '/dashboard' },
+  { name: '小剧场', icon: '🎭', bg: 'linear-gradient(135deg,#ffc1e0,#ff7fb8)', to: '/dashboard' },
+  { name: '时尚美妆', icon: '💄', bg: 'linear-gradient(135deg,#ffb6c1,#ff7a90)', to: '/dashboard' },
+  { name: '直播', icon: '📡', bg: 'linear-gradient(135deg,#ff9a9e,#f86a8d)', to: '/dashboard' }
 ]
 
-const floatCards = [
-  { text: '⚔️ 进击的巨人', bg: 'linear-gradient(135deg,#1ea7e8,#0b6fd0)', left: 6, top: 22, delay: 0 },
-  { text: '🌊 鬼灭之刃', bg: 'linear-gradient(135deg,#43d6f0,#2b86e0)', left: 78, top: 16, delay: 1.2 },
-  { text: '⚡ 咒术回战', bg: 'linear-gradient(135deg,#7fd8ff,#3aa5e8)', left: 14, top: 64, delay: 2.1 },
-  { text: '🌸 你的名字', bg: 'linear-gradient(135deg,#8fd4ff,#b9e8ff)', left: 84, top: 60, delay: 0.6 }
+/* 封面图按顺序对应后端番剧 id；后端无图片字段时用本地生成图补齐 */
+const COVERS = [
+  '/images/cover-hero.png',
+  '/images/cover-friends.png',
+  '/images/cover-pink.png',
+  '/images/cover-chick.png',
+  '/images/cover-cpu.png',
+  '/images/cover-portrait.png',
+  '/images/cover-whale.png',
+  '/images/cover-samurai.png',
+  '/images/cover-astronaut.png',
+  '/images/cover-cat.png'
 ]
+const UPS = ['燃尽编辑部', '深海放映厅', '次元观察员', '番剧小分队', '像素研究所', '光影记录者']
+const VIEW_SAMPLES = ['128.6万', '26.3万', '17.1万', '65.7万', '48.5万', '10.9万']
+const DANMAKU_SAMPLES = ['1.2万', '8941', '6.8万', '4465', '3721', '9631']
+const TIME_SAMPLES = ['昨天', '2 天前', '3 天前', '4 天前', '5 天前', '1 周前']
+const DURATION_SAMPLES = ['12:36', '08:12', '15:47', '05:23', '20:53', '03:41']
 
-/*
- * 番剧数据改为来自后端 GET /api/animes（后台管理维护），
- * 这里只保留「追番按钮」这个本地交互态；请求失败时给出重试入口，
- * 不再用硬编码数据兜底，避免「看似有数据其实后端没通」的错觉。
- */
 const animes = ref([])
 const animesLoading = ref(false)
 const animesError = ref('')
+const offset = ref(0)
 
-/* 没配封面渐变时按 id 稳定选一个兜底色 */
-const FALLBACK_COVERS = [
-  'linear-gradient(135deg,#1ea7e8,#0b6fd0)',
-  'linear-gradient(135deg,#36d1dc,#5b86e5)',
-  'linear-gradient(135deg,#7f53ff,#647dee)'
-]
-function fallbackCover(a) {
-  return FALLBACK_COVERS[(a.id || 0) % FALLBACK_COVERS.length]
+function decorate(list) {
+  return list.map((a, i) => ({
+    ...a,
+    image: COVERS[i % COVERS.length],
+    views: VIEW_SAMPLES[i % VIEW_SAMPLES.length],
+    danmaku: DANMAKU_SAMPLES[i % DANMAKU_SAMPLES.length],
+    duration: DURATION_SAMPLES[i % DURATION_SAMPLES.length],
+    up: UPS[i % UPS.length],
+    time: TIME_SAMPLES[i % TIME_SAMPLES.length]
+  }))
+}
+
+const decorated = computed(() => decorate(animes.value))
+const searchQuery = computed(() => (route.query.q || '').trim())
+const filtered = computed(() => {
+  if (!searchQuery.value) return decorated.value
+  const q = searchQuery.value.toLowerCase()
+  return decorated.value.filter(
+    (a) => a.title.toLowerCase().includes(q) || (a.tag || '').toLowerCase().includes(q)
+  )
+})
+
+/* 右侧 6 张：从当前偏移位置循环取；“换一换”滚动 offset */
+const visibleAnimes = computed(() => {
+  const list = filtered.value
+  if (!list.length) return []
+  return Array.from({ length: Math.min(6, list.length) }, (_, i) => list[(offset.value + i) % list.length])
+})
+const moreAnimes = computed(() => {
+  const list = filtered.value
+  if (!list.length) return []
+  return Array.from({ length: Math.min(6, list.length) }, (_, i) => list[(offset.value + 3 + i) % list.length])
+})
+
+function refreshAnimes() {
+  if (!filtered.value.length) return
+  offset.value = (offset.value + 2) % filtered.value.length
 }
 
 async function loadAnimes() {
   animesLoading.value = true
   animesError.value = ''
   try {
-    animes.value = (await fetchPublicAnimes()).map((a) => ({ ...a, followed: false }))
+    animes.value = await fetchPublicAnimes()
   } catch (error) {
     animesError.value = error.message
   } finally {
@@ -271,585 +250,308 @@ async function loadAnimes() {
   }
 }
 
-const modules = [
-  { icon: '📺', title: '追番进度', desc: '续看、收藏、更新提醒，多端同步', bg: 'rgba(30,167,232,.16)' },
-  { icon: '💬', title: '社区动态', desc: '发帖、评论、和同好一起讨论', bg: 'rgba(91,134,229,.16)' },
-  { icon: '🛡️', title: '同好公会', desc: '建团、组队、冲排行榜', bg: 'rgba(90,200,255,.16)' }
-]
+watch(() => route.query.q, () => { offset.value = 0 })
 
-const tags = ['热血', '奇幻', '治愈', '科幻', '日常', '运动', '悬疑', '恋爱', '机战', '搞笑', '美食', '音乐']
-
-/* 外部动漫视频平台直达链接（新标签页打开，rel 防止反向操纵） */
-const videoLinks = [
-  { name: '哔哩哔哩动漫', desc: '新番连载 · 弹幕同好', url: 'https://www.bilibili.com/anime/', icon: '📺', bg: 'linear-gradient(135deg,#fb7299,#fc8bab)' },
-  { name: '腾讯视频动漫', desc: '国漫日漫 · 高清正版', url: 'https://v.qq.com/channel/cartoon', icon: '🎬', bg: 'linear-gradient(135deg,#12b7f5,#4facfe)' },
-  { name: '爱奇艺动漫', desc: '热门番剧 · 独家上新', url: 'https://www.iqiyi.com/donghua/', icon: '🌸', bg: 'linear-gradient(135deg,#22c55e,#86efac)' },
-  { name: '优酷动漫', desc: '经典番剧 · 追更不断', url: 'https://www.youku.com/animation/', icon: '🐾', bg: 'linear-gradient(135deg,#f59e0b,#fcd34d)' },
-  { name: 'AcFun 动漫', desc: '弹幕文化 · 同好聚集', url: 'https://www.acfun.cn/v/ac-top-anime', icon: '💫', bg: 'linear-gradient(135deg,#ff5d8f,#ff8fb1)' },
-  { name: '咪咕动漫', desc: '正版国漫 · 海量免费', url: 'https://www.migu.cn/', icon: '📱', bg: 'linear-gradient(135deg,#8b5cf6,#c4b5fd)' }
-]
-
-function onFollow(a) {
-  a.followed = !a.followed
-}
-
-// ---- 数字滚动：进入视口后从 0 滚到目标值，只播一次 ----
-let numberObserver = null
-function animateCount(el) {
-  const target = Number(el.dataset.target) || 0
-  const suffix = el.dataset.suffix || ''
-  const prefix = (el.textContent || '').replace(/[\d.]+$/, '').replace(new RegExp(suffix + '$'), '')
-  const duration = 1200
-  const start = performance.now()
-  function tick(now) {
-    const p = Math.min(1, (now - start) / duration)
-    // easeOutCubic
-    const eased = 1 - Math.pow(1 - p, 3)
-    const val = Math.round(target * eased)
-    el.textContent = `${prefix}${val}${suffix}`
-    if (p < 1) requestAnimationFrame(tick)
-  }
-  requestAnimationFrame(tick)
-}
-
-onMounted(async () => {
-  loadAnimes()
-  await nextTick()
-  if (typeof IntersectionObserver === 'undefined') {
-    document.querySelectorAll('.count').forEach(animateCount)
-    return
-  }
-  numberObserver = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          animateCount(entry.target)
-          numberObserver.unobserve(entry.target)
-        }
-      }
-    },
-    { threshold: 0.5 }
-  )
-  document.querySelectorAll('.count').forEach((el) => numberObserver.observe(el))
-})
-
-onUnmounted(() => numberObserver?.disconnect())
+onMounted(() => { loadAnimes() })
 </script>
 
 <style scoped>
-.landing {
-  position: relative;
-  z-index: 1;
+.bili-page {
+  min-height: 100vh;
+  background: #fff;
+  color: #18191c;
+  padding-bottom: 0;
 }
 
-/* ===== Hero ===== */
-.hero {
-  position: relative;
-  min-height: 92vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  padding: 40px 7vw;
+/* ===== 分区入口 ===== */
+.channel-section {
+  background: #fff;
+  padding: 22px 0 6px;
 }
-.hero-glow {
-  position: absolute;
-  width: 60vw;
-  height: 60vw;
-  max-width: 760px;
-  max-height: 760px;
-  right: -10vw;
-  top: -10vw;
-  background: radial-gradient(circle, rgba(30,150,240,.38), transparent 60%);
-  filter: blur(20px);
-  animation: pulseGlow 7s ease-in-out infinite;
-  pointer-events: none;
-}
-/* ===== 蔚蓝人物立绘 =====
-   贴在 Hero 右侧、底边对齐（图片下沿正好是裁切边，贴底最自然）；
-   drop-shadow 用蔚蓝光晕代替原来的发光背景，浮动动画复用全局 floaty。 */
-.hero-char {
-  position: absolute;
-  left: 50%;
-  right: auto;
-  bottom: 0;
-  translate: -50% 0;
-  height: min(72vh, 600px);
-  z-index: 0;
-  pointer-events: none;
-  user-select: none;
-  opacity: .34;
-  filter: blur(1px) drop-shadow(0 0 55px rgba(60, 180, 255, .4));
-  animation: floaty 7s ease-in-out infinite;
-}
-/* 立绘底部的裁切边做一层渐隐，避免生硬的横切线 */
-.hero-char-wrap { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-@media (max-width: 1280px) {
-  .hero-char { height: min(66vh, 520px); opacity: .3; }
-}
-/* 窄屏文字优先：立绘淡出成背景装饰，不与标题/按钮抢空间 */
-@media (max-width: 1024px) {
-  .hero-char {
-    height: min(56vh, 440px);
-    opacity: .18;
-    filter: blur(2px) drop-shadow(0 0 55px rgba(60, 180, 255, .4));
-  }
-}
-.hero-inner {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: 900px;
-}
-.hero-title {
-  font-size: clamp(48px, 8vw, 104px);
-  line-height: 1.02;
-  font-weight: 900;
-  margin: 18px 0 18px;
-  background: linear-gradient(90deg, #fff, #a5e6ff 45%, #2b9fe8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 0 50px rgba(30,140,230,.25);
-}
-.hero-title span {
-  -webkit-text-fill-color: var(--fire-3);
-  color: var(--fire-3);
-}
-.hero-title small {
-  display: block;
-  font-size: .26em;
-  letter-spacing: 6px;
-  font-weight: 700;
-  color: var(--muted);
-  -webkit-text-fill-color: var(--muted);
-  margin-top: 14px;
-}
-.hero-sub {
-  font-size: 18px;
-  line-height: 1.8;
-  color: var(--muted);
-  max-width: 560px;
-}
-.hero-cta {
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  margin: 30px 0 38px;
-}
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 14px 26px;
-  border-radius: 12px;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: transform .25s, box-shadow .25s, background .25s;
-  border: 1px solid transparent;
-}
-.btn-solid {
-  color: #04263f;
-  background: linear-gradient(90deg, var(--ember), var(--fire-1) 50%, var(--fire-2));
-  background-size: 200% 100%;
-  box-shadow: 0 12px 30px rgba(30,140,230,.45);
-}
-.btn-solid:hover { background-position: 100% 0; transform: translateY(-2px); box-shadow: 0 18px 42px rgba(30,140,230,.6); }
-.btn-ghost {
-  color: var(--ember);
-  background: rgba(30,167,232,.1);
-  border-color: var(--line);
-}
-.btn-ghost:hover { background: rgba(30,167,232,.2); transform: translateY(-2px); }
-
-.hero-stats {
-  display: flex;
-  gap: 40px;
-  flex-wrap: wrap;
-  list-style: none;
-  padding: 0;
-}
-.hero-stats li { display: flex; flex-direction: column; gap: 4px; }
-.hero-stats b {
-  font-size: clamp(30px, 4vw, 44px);
-  font-weight: 900;
-  color: #fff;
-  font-variant-numeric: tabular-nums;
-}
-.hero-stats span { font-size: 13px; color: var(--muted); }
-
-/* 漂浮装饰卡 */
-.float-cards { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-.float-card {
-  position: absolute;
-  padding: 10px 16px;
-  border-radius: 14px;
-  font-size: 15px;
-  font-weight: 700;
-  color: #fff;
-  box-shadow: 0 16px 40px rgba(0,0,0,.4);
-  white-space: nowrap;
-  opacity: .85;
-}
-
-/* ===== Hero 空白处的「动漫合集」竖排栏 =====
-   人物立绘宽约 440px（660px 高 × 2:3）贴在 right:3vw，文案最宽 720px 在左，
-   只有超宽屏中间才留得出整块空白，所以 1600px 以下不渲染这条侧栏，
-   不和原有元素抢空间。 */
-.side-collections {
-  display: none;
-  position: absolute;
-  top: 50%;
-  right: calc(3vw + 465px);
-  width: 214px;
-  z-index: 2;
-  transform: translateY(-50%);
-  padding: 14px 14px 10px;
-  border-radius: 18px;
-  background: var(--glass);
-  border: 1px solid var(--line-soft);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 18px 44px rgba(0,0,0,.35);
-  animation: scIn .8s cubic-bezier(.2,.7,.2,1) .45s both;
-}
-@keyframes scIn {
-  from { opacity: 0; transform: translateY(calc(-50% + 28px)); }
-  to   { opacity: 1; transform: translateY(-50%); }
-}
-@media (min-width: 1600px) {
-  .side-collections { display: block; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .side-collections { animation: none; transform: translateY(-50%); }
-}
-.sc-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  padding: 0 2px;
-}
-.sc-head h3 { font-size: 15px; font-weight: 800; }
-.sc-head span { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
-
-/* ===== 本周精选：可折叠 ===== */
-.fold-head { cursor: pointer; user-select: none; transition: color .2s; }
-.fold-head:hover h3, .fold-head:hover span { color: var(--ember); }
-.fold-head:focus-visible { outline: 2px solid var(--fire-1); outline-offset: 4px; border-radius: 8px; }
-.fold-caret {
-  display: inline-block;
-  font-style: normal;
-  font-size: 12px;
-  margin-left: 2px;
-  transition: transform .25s ease;
-}
-.fold-caret.open { transform: rotate(180deg); }
-/* 列表展开/收起的平滑过渡 */
-.fold-enter-active, .fold-leave-active {
-  transition: opacity .25s ease, transform .25s ease, max-height .3s ease;
-  max-height: 600px;
-  overflow: hidden;
-}
-.fold-enter-from, .fold-leave-to {
-  opacity: 0;
-  transform: translateY(-8px);
-  max-height: 0;
-}
-.sc-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.sc-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 9px;
-  border-radius: 12px;
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: background .2s, border-color .2s, transform .2s;
-}
-.sc-item:hover {
-  background: rgba(30,167,232,.12);
-  border-color: var(--line-soft);
-  transform: translateX(3px);
-}
-.sc-ic {
-  flex: 0 0 34px;
-  height: 34px;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  font-size: 17px;
-  background: var(--c, rgba(30,167,232,.16));
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
-}
-.sc-txt { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.sc-txt b {
-  font-size: 13px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.sc-txt span { font-size: 11px; color: var(--muted); }
-
-/* ===== 通用 section ===== */
-.section {
-  max-width: 1180px;
+.channel-grid {
+  max-width: 1500px;
   margin: 0 auto;
-  padding: 70px 7vw;
-}
-.section-head { margin-bottom: 34px; }
-.section-head h2 {
-  font-size: clamp(26px, 3.4vw, 40px);
-  font-weight: 900;
-  line-height: 1.2;
-}
-.section-head p { margin-top: 12px; color: var(--muted); font-size: 15px; }
-
-/* ===== 番剧卡片 ===== */
-.anime-grid {
+  padding: 0 3vw;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 22px;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 18px 8px;
 }
-.anime-card {
-  background: var(--glass);
-  border: 1px solid var(--line-soft);
-  border-radius: 18px;
-  overflow: hidden;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  transition: transform .3s, box-shadow .3s, border-color .3s;
-}
-.anime-card:hover {
-  transform: translateY(-8px);
-  border-color: var(--line);
-  box-shadow: 0 24px 60px rgba(0,0,0,.5);
-}
-.anime-cover {
-  position: relative;
-  height: 150px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  padding: 12px;
-}
-.anime-rating {
-  background: rgba(0,0,0,.45);
-  color: #9fe4ff;
-  font-weight: 800;
-  font-size: 13px;
-  padding: 4px 9px;
-  border-radius: 999px;
-}
-.anime-tag {
-  background: rgba(255,255,255,.18);
-  color: #fff;
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  backdrop-filter: blur(4px);
-}
-.anime-body { padding: 16px 18px 18px; }
-.anime-body h3 { font-size: 17px; margin-bottom: 6px; }
-.anime-body p { font-size: 13px; color: var(--muted); line-height: 1.6; min-height: 42px; }
-.anime-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 12px;
-  font-size: 12px;
-  color: var(--muted);
-}
-.anime-actions {
-  display: flex;
-  gap: 8px;
-}
-.play-btn {
-  text-decoration: none;
-  background: rgba(30,167,232,.2);
-}
-.mini-btn {
-  border: 1px solid var(--line);
-  background: rgba(30,167,232,.12);
-  color: var(--ember);
-  border-radius: 9px;
-  padding: 6px 12px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background .2s, color .2s;
-}
-.mini-btn:hover { background: rgba(30,167,232,.24); }
-
-/* ===== 数据加载 / 异常态 ===== */
-.anime-skeleton { pointer-events: none; }
-.skeleton-block {
-  border-radius: 8px;
-  background: linear-gradient(90deg, rgba(255,255,255,.06), rgba(255,255,255,.14), rgba(255,255,255,.06));
-  background-size: 200% 100%;
-  animation: shimmer 1.4s ease-in-out infinite;
-}
-.sk-cover { display: block; width: 100%; height: 100%; }
-@keyframes shimmer {
-  from { background-position: 200% 0 }
-  to { background-position: -200% 0 }
-}
-.anime-fallback {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  padding: 26px 24px;
-  border-radius: 16px;
-  border: 1px dashed var(--line);
-  background: rgba(30, 167, 232, .06);
-  color: var(--muted);
-  font-size: 14px;
-}
-@media (prefers-reduced-motion: reduce) {
-  .skeleton-block { animation: none }
-}
-
-/* ===== 模块 ===== */
-.modules {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
-}
-.module {
+.channel {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 24px;
-  border-radius: 18px;
-  background: var(--glass);
-  border: 1px solid var(--line-soft);
-  text-decoration: none;
-  color: var(--text);
-  transition: transform .3s, border-color .3s, box-shadow .3s;
-}
-.module:hover { transform: translateY(-6px); border-color: var(--line); box-shadow: 0 22px 52px rgba(0,0,0,.45); }
-.module-ic {
-  width: 52px; height: 52px;
-  border-radius: 14px;
-  display: grid; place-items: center;
-  font-size: 24px;
-  margin-bottom: 6px;
-}
-.module b { font-size: 18px; }
-.module-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
-.module-go { margin-top: 6px; font-size: 13px; color: var(--fire-3); }
-
-/* ===== CTA ===== */
-.cta-band {
-  max-width: 1180px;
-  margin: 20px auto 0;
-  padding: 0 7vw;
-}
-.cta-inner {
-  background: linear-gradient(120deg, rgba(30,167,232,.2), rgba(11,111,208,.16));
-  border: 1px solid var(--line);
-  border-radius: 24px;
-  padding: 48px;
-  text-align: center;
-  backdrop-filter: blur(14px);
-}
-.cta-inner h2 { font-size: clamp(22px, 3vw, 34px); font-weight: 900; }
-.cta-inner p { color: var(--muted); margin: 12px 0 24px; }
-
-/* ===== 标签墙 ===== */
-.marquee {
-  margin: 60px 0 0;
-  overflow: hidden;
-  border-top: 1px solid var(--line-soft);
-  border-bottom: 1px solid var(--line-soft);
-  padding: 18px 0;
-  -webkit-mask: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-  mask: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
-}
-.marquee-track {
-  display: flex;
-  gap: 14px;
-  width: max-content;
-  animation: marquee 26s linear infinite;
-}
-.tag-chip {
-  flex: 0 0 auto;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.06);
-  border: 1px solid var(--line-soft);
-  color: var(--text);
-  font-size: 14px;
-  white-space: nowrap;
-}
-.marquee:hover .marquee-track { animation-play-state: paused; }
-
-/* ===== 动漫视频直达 ===== */
-.video-links {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-}
-.video-link {
-  display: grid;
-  grid-template-columns: 46px 1fr;
-  grid-template-rows: auto auto auto;
-  column-gap: 12px;
-  row-gap: 4px;
   align-items: center;
-  padding: 18px;
-  border-radius: 16px;
-  background: var(--glass);
-  border: 1px solid var(--line-soft);
+  gap: 7px;
+  color: #18191c;
   text-decoration: none;
-  color: var(--text);
-  transition: transform .2s, border-color .2s, background .2s;
+  font-size: 13px;
+  transition: transform .2s, color .2s;
 }
-.video-link:hover {
-  transform: translateY(-4px);
-  border-color: var(--fire-1);
-  background: rgba(30,167,232,.10);
-}
-.vl-ic {
-  grid-row: 1 / 4;
+.channel:hover { transform: translateY(-4px); color: #fb7299; }
+.channel-ic {
   width: 46px;
   height: 46px;
-  border-radius: 13px;
+  border-radius: 50%;
   display: grid;
   place-items: center;
   font-size: 22px;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
 }
-.video-link b { font-size: 15px; }
-.vl-desc { font-size: 12px; color: var(--muted); }
-.vl-go { font-size: 12px; color: var(--ember); margin-top: 4px; }
+
+/* ===== 主内容 ===== */
+.main-wrap {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 14px 3vw 0;
+}
+.primary-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr);
+  gap: 18px;
+  align-items: start;
+}
+
+/* 轮播 */
+.carousel {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #0b1622;
+}
+.slide {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  opacity: 0;
+  transition: opacity .6s ease;
+}
+.slide.active { opacity: 1; }
+.slide-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 45%, rgba(0, 0, 0, .78));
+}
+.slide-caption {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: 46px;
+  color: #fff;
+}
+.slide-badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 4px;
+  background: #fb7299;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.slide-caption h2 { font-size: clamp(20px, 2.4vw, 32px); font-weight: 900; }
+.slide-caption p { margin-top: 8px; font-size: 13px; opacity: .9; }
+.carousel-nav {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  width: 34px;
+  height: 52px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, .3);
+  color: #fff;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .2s, background .2s;
+}
+.carousel:hover .carousel-nav { opacity: 1; }
+.carousel-nav:hover { background: rgba(0, 0, 0, .55); }
+.carousel-nav.prev { left: 8px; }
+.carousel-nav.next { right: 8px; }
+.carousel-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.carousel-dots button {
+  width: 8px;
+  height: 8px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .5);
+  cursor: pointer;
+  transition: width .2s, background .2s;
+}
+.carousel-dots button.on { width: 20px; border-radius: 4px; background: #fb7299; }
+
+/* 视频卡片网格 */
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 10px;
+}
+.video-card { min-width: 0; }
+.video-cover {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f1f2f3;
+}
+.video-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .3s;
+}
+.video-card:hover .video-cover img { transform: scale(1.05); }
+.video-stats {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 7px;
+  display: flex;
+  gap: 10px;
+  color: #fff;
+  font-size: 11px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .8);
+}
+.video-duration {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, .6);
+  color: #fff;
+  font-size: 11px;
+}
+.video-stats { right: 54px; }
+.video-info { padding: 7px 1px 0; }
+.video-info h3 {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #18191c;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 38px;
+}
+.video-card:hover .video-info h3 { color: #fb7299; }
+.video-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 3px;
+  font-size: 11px;
+  color: #9499a0;
+}
+.video-meta .up {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.video-fallback {
+  grid-column: 1 / -1;
+  padding: 30px;
+  border: 1px dashed #d6d9dd;
+  border-radius: 10px;
+  color: #9499a0;
+  text-align: center;
+  font-size: 14px;
+}
+.retry-btn {
+  margin-top: 10px;
+  padding: 6px 16px;
+  border: 0;
+  border-radius: 6px;
+  background: #fb7299;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* 骨架 */
+.skeleton-block {
+  display: block;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f1f2f3, #e6e8eb, #f1f2f3);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+.sk-cover { width: 100%; aspect-ratio: 16 / 10; }
+@keyframes shimmer { from { background-position: 200% 0 } to { background-position: -200% 0 } }
+
+/* ===== 为你推荐 ===== */
+.more-section {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 34px 3vw 10px;
+}
+.section-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.section-bar h2 { font-size: 20px; font-weight: 800; }
+.refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1px solid #e3e5e7;
+  border-radius: 8px;
+  background: #fff;
+  color: #61666d;
+  font-size: 13px;
+  cursor: pointer;
+}
+.refresh-btn:hover { color: #fb7299; border-color: #fb7299; }
+.video-grid--wide { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 
 /* ===== 页脚 ===== */
-.landing-footer {
+.bili-footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 40px 7vw 60px;
-  color: var(--muted);
-  font-size: 14px;
+  gap: 16px;
+  margin-top: 40px;
+  padding: 28px 3vw;
+  border-top: 1px solid #f1f2f3;
+  color: #9499a0;
+  font-size: 13px;
 }
-.landing-footer .mark { font-size: 18px; }
+.bili-footer span:first-child { color: #fb7299; font-weight: 800; }
 
+/* ===== 响应式 ===== */
+@media (max-width: 1200px) {
+  .channel-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .video-grid--wide { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
 @media (max-width: 900px) {
-  .hero { min-height: 86vh; }
-  .hero-stats { gap: 26px; }
-  .cta-inner { padding: 34px 22px; }
+  .primary-layout { grid-template-columns: 1fr; }
+  .channel-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .video-grid--wide { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .video-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .channel-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .video-grid--wide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-block { animation: none; }
+  .slide { transition: none; }
 }
 </style>

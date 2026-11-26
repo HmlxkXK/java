@@ -420,3 +420,12 @@ code{
 @media (prefers-reduced-motion: reduce){
   .floaty{animation:none}
 }
+
+/* ===== 首页（B 站风格）浅色底 =====
+   全局 body 默认是深蓝渐变；首页改成纯白，配合 LandingView 的浅色内容。
+   只作用于 body 本身，不影响其他页面的深色主题。 */
+body.bili-home{
+  background:#fff;
+  color:#18191c;
+}
+body.bili-home .bili-page{background:#fff}
