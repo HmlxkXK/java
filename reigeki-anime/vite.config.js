@@ -3,6 +3,8 @@ import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   plugins: [vue()],
+  // three.js 异步 chunk 约 743KB，属库本身体积，已按需加载不阻塞首屏，放宽提示阈值
+  build: { chunkSizeWarningLimit: 800 },
   server: {
     port: 5173,
     open: true,

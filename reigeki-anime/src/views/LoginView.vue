@@ -1,5 +1,6 @@
 <template>
   <div class="wrap">
+    <ThreeScene variant="dark" />
     <section class="hero">
       <span class="badge">ANIME · 热血 · 二次元</span>
       <h1>燃尽动漫<small>R E I G E K I&nbsp;&nbsp;A N I M E</small></h1>
@@ -102,6 +103,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth.js'
 import { useToast } from '../composables/useToast.js'
 import { validateRequired } from '../utils/validators.js'
+import ThreeScene from '../components/ThreeScene.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -148,8 +150,8 @@ function resolveRedirect() {
   if (typeof target === 'string' && target.startsWith('/') && !target.startsWith('//')) {
     return target
   }
-  // 默认登录后进入社员中心（落地页是公开页，不应作为登录后的落点）
-  return '/dashboard'
+  // 默认登录后进入 B站风格首页
+  return '/'
 }
 
 async function onSubmit() {

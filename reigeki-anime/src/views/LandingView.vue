@@ -1,5 +1,6 @@
 <template>
   <div class="bili-page">
+    <ThreeScene variant="light" />
     <!-- ===== 分区入口：两行圆形图标 ===== -->
     <section class="channel-section" aria-label="分区导航">
       <div class="channel-grid">
@@ -143,6 +144,7 @@
 import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { fetchPublicAnimes } from '../api/anime.js'
+import ThreeScene from '../components/ThreeScene.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -287,6 +289,8 @@ onMounted(() => { loadAnimes() })
 
 <style scoped>
 .bili-page {
+  position: relative;
+  z-index: 0; /* 建立堆叠上下文，让内部 z-index:-1 的 3D 层落在白底之上、内容之下 */
   min-height: 100vh;
   background: #fff;
   color: #18191c;
