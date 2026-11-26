@@ -2454,3 +2454,6 @@ org.springframework.web.servlet.resource.NoResourceFoundException: No static res
 2026-11-26 14:37:45  DEBUG c.f.springboottest.mapper.AnimeMapper.selectList.debug 135:==>  Preparing: SELECT id,title,description,tag,rating,episode,cover,sort,visible,create_time,update_time FROM anime WHERE (visible = ?) ORDER BY sort ASC,id ASC
 2026-11-26 14:37:45  DEBUG c.f.springboottest.mapper.AnimeMapper.selectList.debug 135:==> Parameters: true(Boolean)
 2026-11-26 14:37:45  DEBUG c.f.springboottest.mapper.AnimeMapper.selectList.debug 135:<==      Total: 6
+2026-11-26 14:38:11  DEBUG c.f.springboottest.mapper.AnimeMapper.selectList.debug 135:==>  Preparing: SELECT id,title,description,tag,rating,episode,cover,sort,visible,create_time,update_time FROM anime WHERE (visible = ?) ORDER BY sort ASC,id ASC
+2026-11-26 14:38:11  DEBUG c.f.springboottest.mapper.AnimeMapper.selectList.debug 135:==> Parameters: true(Boolean)
+2026-11-26 14:38:11  DEBUG c.f.springboottest.mapper.AnimeMapper.selectList.debug 135:<==      Total: 6
