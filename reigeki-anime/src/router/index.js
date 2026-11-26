@@ -80,8 +80,12 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    // 浏览器前进/后退时恢复原来的滚动位置，普通跳转回到顶部
-    return savedPosition || { top: 0 }
+    // 浏览器前进/后退时恢复原来的滚动位置
+    if (savedPosition) return savedPosition
+    // 带 hash 的跳转滚到对应锚点（首页分区入口 / 搜索结果定位到番剧区）
+    if (to.hash) return { el: to.hash, behavior: 'smooth' }
+    // 普通跳转回到顶部
+    return { top: 0 }
   }
 })
 

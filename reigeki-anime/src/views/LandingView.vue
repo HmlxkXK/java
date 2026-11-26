@@ -3,16 +3,17 @@
     <!-- ===== 分区入口：两行圆形图标 ===== -->
     <section class="channel-section" aria-label="分区导航">
       <div class="channel-grid">
-        <router-link
+        <button
           v-for="(c, i) in channels"
           :key="c.name"
-          :to="c.to"
+          type="button"
           class="channel"
+          @click="goChannel(c)"
           v-reveal="{ delay: i * 25 }"
         >
           <span class="channel-ic" :style="{ background: c.bg }" aria-hidden="true">{{ c.icon }}</span>
           <span>{{ c.name }}</span>
-        </router-link>
+        </button>
       </div>
     </section>
 
@@ -62,6 +63,11 @@
           <div v-else-if="animesError" class="video-fallback" role="alert">
             <p>番剧加载失败：{{ animesError }}</p>
             <button type="button" class="retry-btn" @click="loadAnimes">重试</button>
+          </div>
+
+          <div v-else-if="!filtered.length" class="video-fallback" role="status">
+            <p>没有匹配的番剧，换个关键词或分区试试</p>
+            <button type="button" class="retry-btn" @click="router.push({ path: '/' })">查看全部</button>
           </div>
 
           <template v-else>
@@ -135,10 +141,20 @@
  * 播放量、弹幕、UP 主等为演示性展示数据（后端暂无这些字段）。
  */
 import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { fetchPublicAnimes } from '../api/anime.js'
 
 const route = useRoute()
+const router = useRouter()
+
+/* 分区点击：内容分区滚到本页番剧区并按标签过滤；个人中心类跳社员中心 */
+function goChannel(c) {
+  if (c.to) {
+    router.push(c.to)
+    return
+  }
+  router.push({ path: '/', hash: '#animes', query: c.tag ? { tag: c.tag } : {} })
+}
 
 const slides = [
   { title: '碧海之章', subtitle: '少年与深海共生，在潮汐尽头点亮最后的光', badge: '独家 · 热血', image: '/images/carousel-hero.png' },
@@ -152,27 +168,32 @@ function prevSlide() { slideIndex.value = (slideIndex.value - 1 + slides.length)
 onMounted(() => { slideTimer = setInterval(nextSlide, 5000) })
 onUnmounted(() => clearInterval(slideTimer))
 
+/*
+ * 分区入口：带 tag 的滚到本页番剧区按标签过滤；
+ * 带 to 的跳真实路由（社员中心）。后端番剧的 tag 目前是
+ * 热血 / 奇幻 / 动作 / 治愈 / 科幻 / 日常，其余分区先归到「番剧」全集。
+ */
 const channels = [
   { name: '动态', icon: '🌊', bg: 'linear-gradient(135deg,#ffb64d,#ff8a3d)', to: '/dashboard' },
-  { name: '热门', icon: '🔥', bg: 'linear-gradient(135deg,#ff6a6a,#f2355b)', to: '/dashboard' },
-  { name: '番剧', icon: '📺', bg: 'linear-gradient(135deg,#7ec8ff,#3b9dff)', to: '/dashboard' },
-  { name: '国创', icon: '🐉', bg: 'linear-gradient(135deg,#9ad9ff,#4aa3ff)', to: '/dashboard' },
-  { name: '综艺', icon: '🎤', bg: 'linear-gradient(135deg,#ffd166,#ff9f43)', to: '/dashboard' },
-  { name: '动画', icon: '✨', bg: 'linear-gradient(135deg,#c8a2ff,#8f6dff)', to: '/dashboard' },
-  { name: '鬼畜', icon: '😜', bg: 'linear-gradient(135deg,#a0e8ff,#4fc3f7)', to: '/dashboard' },
-  { name: '舞蹈', icon: '💃', bg: 'linear-gradient(135deg,#ffb3d1,#ff6fa5)', to: '/dashboard' },
-  { name: '娱乐', icon: '🎪', bg: 'linear-gradient(135deg,#ffcf8b,#ff9d5c)', to: '/dashboard' },
-  { name: '科技数码', icon: '💻', bg: 'linear-gradient(135deg,#a8c7fa,#6f9dff)', to: '/dashboard' },
-  { name: '美食', icon: '🍜', bg: 'linear-gradient(135deg,#ffcf9e,#ff9f68)', to: '/dashboard' },
-  { name: '汽车', icon: '🚗', bg: 'linear-gradient(135deg,#b7d3ff,#7aa8ff)', to: '/dashboard' },
-  { name: '游戏', icon: '🎮', bg: 'linear-gradient(135deg,#c4b5fd,#8b7cf6)', to: '/dashboard' },
-  { name: '音乐', icon: '🎵', bg: 'linear-gradient(135deg,#ffb3c6,#ff7096)', to: '/dashboard' },
-  { name: '影视', icon: '🎬', bg: 'linear-gradient(135deg,#9fb8ff,#6a86ff)', to: '/dashboard' },
-  { name: '知识', icon: '📚', bg: 'linear-gradient(135deg,#8fd6c4,#4fbfa2)', to: '/dashboard' },
-  { name: '资讯', icon: '📰', bg: 'linear-gradient(135deg,#b0bec5,#78909c)', to: '/dashboard' },
-  { name: '小剧场', icon: '🎭', bg: 'linear-gradient(135deg,#ffc1e0,#ff7fb8)', to: '/dashboard' },
-  { name: '时尚美妆', icon: '💄', bg: 'linear-gradient(135deg,#ffb6c1,#ff7a90)', to: '/dashboard' },
-  { name: '直播', icon: '📡', bg: 'linear-gradient(135deg,#ff9a9e,#f86a8d)', to: '/dashboard' }
+  { name: '热门', icon: '🔥', bg: 'linear-gradient(135deg,#ff6a6a,#f2355b)', tag: '' },
+  { name: '番剧', icon: '📺', bg: 'linear-gradient(135deg,#7ec8ff,#3b9dff)', tag: '' },
+  { name: '国创', icon: '🐉', bg: 'linear-gradient(135deg,#9ad9ff,#4aa3ff)', tag: '奇幻' },
+  { name: '综艺', icon: '🎤', bg: 'linear-gradient(135deg,#ffd166,#ff9f43)', tag: '日常' },
+  { name: '动画', icon: '✨', bg: 'linear-gradient(135deg,#c8a2ff,#8f6dff)', tag: '' },
+  { name: '鬼畜', icon: '😜', bg: 'linear-gradient(135deg,#a0e8ff,#4fc3f7)', tag: '' },
+  { name: '舞蹈', icon: '💃', bg: 'linear-gradient(135deg,#ffb3d1,#ff6fa5)', tag: '' },
+  { name: '娱乐', icon: '🎪', bg: 'linear-gradient(135deg,#ffcf8b,#ff9d5c)', tag: '' },
+  { name: '科技数码', icon: '💻', bg: 'linear-gradient(135deg,#a8c7fa,#6f9dff)', tag: '科幻' },
+  { name: '美食', icon: '🍜', bg: 'linear-gradient(135deg,#ffcf9e,#ff9f68)', tag: '日常' },
+  { name: '汽车', icon: '🚗', bg: 'linear-gradient(135deg,#b7d3ff,#7aa8ff)', tag: '' },
+  { name: '游戏', icon: '🎮', bg: 'linear-gradient(135deg,#c4b5fd,#8b7cf6)', tag: '动作' },
+  { name: '音乐', icon: '🎵', bg: 'linear-gradient(135deg,#ffb3c6,#ff7096)', tag: '' },
+  { name: '影视', icon: '🎬', bg: 'linear-gradient(135deg,#9fb8ff,#6a86ff)', tag: '' },
+  { name: '知识', icon: '📚', bg: 'linear-gradient(135deg,#8fd6c4,#4fbfa2)', tag: '科幻' },
+  { name: '资讯', icon: '📰', bg: 'linear-gradient(135deg,#b0bec5,#78909c)', tag: '' },
+  { name: '小剧场', icon: '🎭', bg: 'linear-gradient(135deg,#ffc1e0,#ff7fb8)', tag: '治愈' },
+  { name: '时尚美妆', icon: '💄', bg: 'linear-gradient(135deg,#ffb6c1,#ff7a90)', tag: '' },
+  { name: '直播', icon: '📡', bg: 'linear-gradient(135deg,#ff9a9e,#f86a8d)', tag: '' }
 ]
 
 /* 封面图按顺序对应后端番剧 id；后端无图片字段时用本地生成图补齐 */
@@ -213,12 +234,21 @@ function decorate(list) {
 
 const decorated = computed(() => decorate(animes.value))
 const searchQuery = computed(() => (route.query.q || '').trim())
+const tagQuery = computed(() => (route.query.tag || '').trim())
+
+/* 搜索框（q）与分区入口（tag）共用一套过滤；两者都为空时展示全部 */
 const filtered = computed(() => {
-  if (!searchQuery.value) return decorated.value
+  let list = decorated.value
   const q = searchQuery.value.toLowerCase()
-  return decorated.value.filter(
-    (a) => a.title.toLowerCase().includes(q) || (a.tag || '').toLowerCase().includes(q)
-  )
+  if (q) {
+    list = list.filter(
+      (a) => a.title.toLowerCase().includes(q) || (a.tag || '').toLowerCase().includes(q)
+    )
+  }
+  if (tagQuery.value) {
+    list = list.filter((a) => (a.tag || '') === tagQuery.value)
+  }
+  return list
 })
 
 /* 右侧 6 张：从当前偏移位置循环取；“换一换”滚动 offset */
@@ -250,7 +280,7 @@ async function loadAnimes() {
   }
 }
 
-watch(() => route.query.q, () => { offset.value = 0 })
+watch(() => [route.query.q, route.query.tag], () => { offset.value = 0 })
 
 onMounted(() => { loadAnimes() })
 </script>
@@ -281,6 +311,11 @@ onMounted(() => { loadAnimes() })
   flex-direction: column;
   align-items: center;
   gap: 7px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
   color: #18191c;
   text-decoration: none;
   font-size: 13px;
