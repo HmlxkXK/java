@@ -11,7 +11,8 @@
  *   - variant='dark'（登录页）：深色底 + additive 发光核心，蔚蓝配色。
  *   - variant='light'（B站首页）：纯白底，改用普通混合的浅蓝粒子 + 半透明线框，
  *     避免 additive 在白底上不可见；整体低对比，不干扰阅读。
- *   - prefers-reduced-motion：只渲染一帧静态画面（不晃眼又保留氛围）。
+ *   - prefers-reduced-motion：降到较慢的旋转速度而不是完全静止，
+ *     保留「能量核心在动」的视觉反馈（其它 DOM 动效仍然尊重系统设置）。
  *   - 切标签页暂停 rAF；ResizeObserver 同步画布；卸载时释放全部 GPU 资源；
  *     WebGL / import 失败静默降级。
  */
@@ -144,15 +145,17 @@ function isMobile() {
 
 function renderFrame() {
   if (!renderer || disposed) return
+  // 系统开启「减弱动态效果」时降速而不是停帧，避免 3D 看起来像一张静态图。
+  const speed = reduceMotion ? 0.6 : 1
   if (core) {
-    core.rotation.x += 0.0022
-    core.rotation.y += 0.0031
+    core.rotation.x += 0.0022 * speed
+    core.rotation.y += 0.0031 * speed
   }
-  if (ringA) ringA.rotation.z += 0.0035
-  if (ringB) ringB.rotation.z -= 0.0028
-  if (particles) particles.rotation.y += 0.0006
+  if (ringA) ringA.rotation.z += 0.0035 * speed
+  if (ringB) ringB.rotation.z -= 0.0028 * speed
+  if (particles) particles.rotation.y += 0.0006 * speed
 
-  if (group && !reduceMotion) {
+  if (group) {
     pointer.x += (target.x - pointer.x) * 0.045
     pointer.y += (target.y - pointer.y) * 0.045
     group.rotation.y = pointer.x * 0.28
@@ -163,7 +166,7 @@ function renderFrame() {
 }
 
 function loop() {
-  if (hidden || reduceMotion) return
+  if (hidden) return
   renderFrame()
   rafId = requestAnimationFrame(loop)
 }
@@ -186,19 +189,14 @@ function onPointerMove(e) {
 
 function onVisibility() {
   hidden = document.hidden
-  if (!hidden && !reduceMotion) {
-    cancelAnimationFrame(rafId)
-    loop()
-  } else {
-    cancelAnimationFrame(rafId)
-  }
+  cancelAnimationFrame(rafId)
+  if (!hidden) loop()
 }
 
 function onMediaChange(e) {
   reduceMotion = e.matches
   cancelAnimationFrame(rafId)
-  if (reduceMotion) renderFrame()
-  else if (!hidden) loop()
+  if (!hidden) loop()
 }
 
 function dispose() {
@@ -245,7 +243,7 @@ onMounted(async () => {
 
   media.addEventListener('change', onMediaChange)
   document.addEventListener('visibilitychange', onVisibility)
-  if (!reduceMotion) window.addEventListener('pointermove', onPointerMove, { passive: true })
+  window.addEventListener('pointermove', onPointerMove, { passive: true })
 
   if (typeof ResizeObserver !== 'undefined' && host.value) {
     resizeObserver = new ResizeObserver(onResize)
@@ -254,7 +252,7 @@ onMounted(async () => {
     window.addEventListener('resize', onResize, { passive: true })
   }
 
-  if (!reduceMotion && !hidden) loop()
+  if (!hidden) loop()
 })
 
 onBeforeUnmount(dispose)

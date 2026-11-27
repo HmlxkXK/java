@@ -13,7 +13,7 @@ import { hasValidToken, hasValidAdminToken } from '../api/session.js'
  *
  * meta 约定：
  *   requiresAuth 需要登录，未登录跳登录页并带上 redirect
- *   guestOnly    仅未登录可访问（登录/注册页），已登录时跳回首页
+ *   guestOnly    仅语义标记；访问 /login 时始终展示登录页，不再因本地 token 自动跳过
  */
 
 const routes = [
@@ -21,7 +21,8 @@ const routes = [
     path: '/',
     name: 'home',
     component: () => import('../views/LandingView.vue'),
-    meta: { title: '燃尽动漫' }
+    // 首页需要登录：未登录时全局守卫弹到 /login，登录后回到 /
+    meta: { requiresAuth: true, title: '燃尽动漫' }
   },
   {
     path: '/dashboard',
@@ -121,15 +122,14 @@ router.beforeEach((to) => {
     }
   }
 
-  if (to.meta.guestOnly && authenticated) {
-    return { name: 'home' }
-  }
-
+  // 不再因为本地已有 token 就把 /login、/register 自动弹走：
+  // 每次启动脚本都会先停在登录页，由用户显式登录一次再进首页。
   return true
 })
 
 router.afterEach((to) => {
-  document.title = to.meta.title ? `${to.meta.title} · 燃尽动漫` : '燃尽动漫'
+  const title = to.meta.title
+  document.title = title && title !== '燃尽动漫' ? `${title} · 燃尽动漫` : '燃尽动漫'
 })
 
 export default router

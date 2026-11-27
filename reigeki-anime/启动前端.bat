@@ -11,6 +11,7 @@ echo.
 
 if not exist node_modules (
     echo First run: installing dependencies...
+    rem Vite 5 / plugin-vue 5 support Node 18 and 20; no native rolldown binding needed.
     call npm install
     echo.
 )

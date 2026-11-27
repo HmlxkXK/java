@@ -7,7 +7,8 @@ export default defineConfig({
   build: { chunkSizeWarningLimit: 800 },
   server: {
     port: 5173,
-    open: true,
+    // 启动脚本运行后先打开登录页；登录成功由前端路由跳到首页（/）
+    open: '/login',
     // 把 /api 反向代理到 Spring Boot，前端因此始终请求同源地址（浏览器眼里
     // 只有 5173，不存在跨域）。好处有三个：
     //   1. 前端不再硬编码后端端口，后端换端口只改这一处；
