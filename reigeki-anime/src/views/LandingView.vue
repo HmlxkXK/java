@@ -178,7 +178,7 @@ onUnmounted(() => clearInterval(slideTimer))
 const channels = [
   { name: '动态', icon: '🌊', bg: 'linear-gradient(135deg,#ffb64d,#ff8a3d)', to: '/dashboard' },
   { name: '热门', icon: '🔥', bg: 'linear-gradient(135deg,#ff6a6a,#f2355b)', tag: '' },
-  { name: '番剧', icon: '📺', bg: 'linear-gradient(135deg,#7ec8ff,#3b9dff)', tag: '' },
+  { name: '番剧', icon: '📺', bg: 'linear-gradient(135deg,#7ec8ff,#3b9dff)', to: '/anime' },
   { name: '国创', icon: '🐉', bg: 'linear-gradient(135deg,#9ad9ff,#4aa3ff)', tag: '奇幻' },
   { name: '综艺', icon: '🎤', bg: 'linear-gradient(135deg,#ffd166,#ff9f43)', tag: '日常' },
   { name: '动画', icon: '✨', bg: 'linear-gradient(135deg,#c8a2ff,#8f6dff)', tag: '' },
@@ -209,7 +209,9 @@ const COVERS = [
   '/images/cover-whale.png',
   '/images/cover-samurai.png',
   '/images/cover-astronaut.png',
-  '/images/cover-cat.png'
+  '/images/cover-cat.png',
+  '/images/banner-autumn.png',
+  '/images/carousel-hero.png'
 ]
 const UPS = ['燃尽编辑部', '深海放映厅', '次元观察员', '番剧小分队', '像素研究所', '光影记录者']
 const VIEW_SAMPLES = ['128.6万', '26.3万', '17.1万', '65.7万', '48.5万', '10.9万']

@@ -23,7 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * <ul>
  *   <li>两个前台社员账号（原有）；</li>
  *   <li>一个后台管理员账号 admin / admin123456（后台登录页无注册，只能靠这里或数据库建）；</li>
- *   <li>六条演示番剧，对应首页「本周热门番剧」，仅当表为空时写入。</li>
+ *   <li>十二条演示番剧（其中后六条只有封面、无剧集），对应首页「本周热门番剧」，仅当表为空时写入。</li>
  * </ul>
  * 已存在的记录一律跳过，不会覆盖手动改过的数据。
  * <p>数据访问层已从 JPA 迁移到 MyBatis-Plus：存在性判断用 selectCount，
@@ -105,7 +105,20 @@ public class DataInitializer {
                 "linear-gradient(135deg,#7f53ff,#647dee)", 4);
         seedAnime(mapper, "荒野炊烟", "末日废土里，美食是最温柔的抵抗。", "日常", "8.8", 30,
                 "linear-gradient(135deg,#11998e,#38ef7d)", 5);
-        log.info("预置演示番剧 x6 -> 首页「本周热门番剧」数据源");
+        // 补充演示条目：只有封面图占位，没有配置剧集，播放页会显示「还没有上传任何剧集」
+        seedAnime(mapper, "苍穹战记", "少年执剑冲破苍穹，向命运夺回名字。", "热血", "9.3", 24,
+                "linear-gradient(135deg,#4facfe,#00f2fe)", 6);
+        seedAnime(mapper, "月下剑舞", "月色之下，最后一舞斩断宿命。", "动作", "8.9", 13,
+                "linear-gradient(135deg,#667eea,#764ba2)", 7);
+        seedAnime(mapper, "星海拾遗", "在星海废墟中拾起文明留下的回声。", "科幻", "9.0", 11,
+                "linear-gradient(135deg,#0f2027,#2c5364)", 8);
+        seedAnime(mapper, "森林物语", "少女与森林精灵共度的四季。", "治愈", "8.6", 12,
+                "linear-gradient(135deg,#11998e,#38ef7d)", 9);
+        seedAnime(mapper, "霓虹街区", "霓虹灯下，年轻人各自的日常与梦想。", "日常", "8.5", 20,
+                "linear-gradient(135deg,#ff6a88,#ff99ac)", 10);
+        seedAnime(mapper, "龙焰之诗", "龙焰重燃，古老契约再度苏醒。", "奇幻", "9.1", 16,
+                "linear-gradient(135deg,#f7971e,#ffd200)", 11);
+        log.info("预置演示番剧 x12 -> 首页「本周热门番剧」数据源");
     }
 
     /**

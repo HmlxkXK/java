@@ -106,7 +106,7 @@ SELECT 'admin',
        '站点管理员'
 WHERE NOT EXISTS (SELECT 1 FROM admin_account WHERE username = 'admin');
 
--- 首页演示番剧 x6，仅当表为空时写入
+-- 首页演示番剧 x12（后六条只有封面、无剧集），仅当表为空时写入
 INSERT INTO anime (title, description, tag, rating, episode, cover, `sort`, visible)
 SELECT * FROM (
     SELECT '碧海之章' AS title, '少年与深海共生，在潮汐尽头点亮最后的光。' AS description,
@@ -122,6 +122,18 @@ SELECT * FROM (
            'linear-gradient(135deg,#7f53ff,#647dee)', 4, 1
     UNION ALL SELECT '荒野炊烟', '末日废土里，美食是最温柔的抵抗。', '日常', '8.8', 30,
            'linear-gradient(135deg,#11998e,#38ef7d)', 5, 1
+    UNION ALL SELECT '苍穹战记', '少年执剑冲破苍穹，向命运夺回名字。', '热血', '9.3', 24,
+           'linear-gradient(135deg,#4facfe,#00f2fe)', 6, 1
+    UNION ALL SELECT '月下剑舞', '月色之下，最后一舞斩断宿命。', '动作', '8.9', 13,
+           'linear-gradient(135deg,#667eea,#764ba2)', 7, 1
+    UNION ALL SELECT '星海拾遗', '在星海废墟中拾起文明留下的回声。', '科幻', '9.0', 11,
+           'linear-gradient(135deg,#0f2027,#2c5364)', 8, 1
+    UNION ALL SELECT '森林物语', '少女与森林精灵共度的四季。', '治愈', '8.6', 12,
+           'linear-gradient(135deg,#11998e,#38ef7d)', 9, 1
+    UNION ALL SELECT '霓虹街区', '霓虹灯下，年轻人各自的日常与梦想。', '日常', '8.5', 20,
+           'linear-gradient(135deg,#ff6a88,#ff99ac)', 10, 1
+    UNION ALL SELECT '龙焰之诗', '龙焰重燃，古老契约再度苏醒。', '奇幻', '9.1', 16,
+           'linear-gradient(135deg,#f7971e,#ffd200)', 11, 1
 ) seed
 WHERE NOT EXISTS (SELECT 1 FROM anime);
 

@@ -31,6 +31,12 @@ const routes = [
     meta: { requiresAuth: true, title: '社员中心' }
   },
   {
+    path: '/anime',
+    name: 'anime',
+    component: () => import('../views/AnimeView.vue'),
+    meta: { requiresAuth: true, title: '番剧' }
+  },
+  {
     path: '/watch/:animeId',
     name: 'watch',
     component: () => import('../views/WatchView.vue'),
